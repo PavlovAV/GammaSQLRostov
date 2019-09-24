@@ -1,0 +1,486 @@
+﻿GRANT VIEW ANY COLUMN ENCRYPTION KEY DEFINITION TO PUBLIC;
+
+
+GO
+GRANT VIEW ANY COLUMN MASTER KEY DEFINITION TO PUBLIC;
+
+
+GO
+GRANT CONNECT TO [ПРС11];
+
+
+GO
+GRANT CONNECT TO [ПЛ21];
+
+
+GO
+GRANT CONNECT TO [БДМ12];
+
+
+GO
+GRANT CONNECT TO [БДМ11];
+
+
+GO
+GRANT CONNECT TO [Костин];
+
+
+GO
+GRANT CONNECT TO [БДМ21];
+
+
+GO
+GRANT CONNECT TO [БДМ22];
+
+
+GO
+GRANT CONNECT TO [БДМ23];
+
+
+GO
+GRANT CONNECT TO [БДМ24];
+
+
+GO
+GRANT CONNECT TO [sl];
+
+
+GO
+GRANT CONNECT TO [matt];
+
+
+GO
+GRANT CONNECT TO [БДМ13];
+
+
+GO
+GRANT CONNECT TO [БДМ14];
+
+
+GO
+GRANT CONNECT TO [Кривушов];
+
+
+GO
+GRANT CONNECT TO [ПРС21];
+
+
+GO
+GRANT CONNECT TO [ПРС22];
+
+
+GO
+GRANT CONNECT TO [ПРС23];
+
+
+GO
+GRANT CONNECT TO [ПРС24];
+
+
+GO
+GRANT CONNECT TO [ПРС12];
+
+
+GO
+GRANT CONNECT TO [ПРС13];
+
+
+GO
+GRANT CONNECT TO [ПРС14];
+
+
+GO
+GRANT CONNECT TO [ПЛ22];
+
+
+GO
+GRANT CONNECT TO [ПЛ24];
+
+
+GO
+GRANT CONNECT TO [ПЛ23];
+
+
+GO
+GRANT CONNECT TO [Диспетчер];
+
+
+GO
+GRANT CONNECT TO [АнтоновскаяОА];
+
+
+GO
+GRANT CONNECT TO [Кажукало];
+
+
+GO
+GRANT CONNECT TO [X51];
+
+
+GO
+GRANT CONNECT TO [X52];
+
+
+GO
+GRANT CONNECT TO [X53];
+
+
+GO
+GRANT CONNECT TO [X54];
+
+
+GO
+GRANT CONNECT TO [S41];
+
+
+GO
+GRANT CONNECT TO [S42];
+
+
+GO
+GRANT CONNECT TO [S43];
+
+
+GO
+GRANT CONNECT TO [S44];
+
+
+GO
+GRANT CONNECT TO [Viewer1C];
+
+
+GO
+GRANT CONNECT TO [БДМ31];
+
+
+GO
+GRANT CONNECT TO [Приемосдатчик];
+
+
+GO
+GRANT CONNECT TO [tsd];
+
+
+GO
+GRANT CONNECT TO [Склад];
+
+
+GO
+GRANT CONNECT TO [Гилев];
+
+
+GO
+GRANT CONNECT TO [Югова];
+
+
+GO
+GRANT CONNECT TO [БДМ32];
+
+
+GO
+GRANT CONNECT TO [БДМ33];
+
+
+GO
+GRANT CONNECT TO [БДМ34];
+
+
+GO
+GRANT CONNECT TO [ПРС31];
+
+
+GO
+GRANT CONNECT TO [ПРС32];
+
+
+GO
+GRANT CONNECT TO [ПРС33];
+
+
+GO
+GRANT CONNECT TO [ПРС34];
+
+
+GO
+GRANT CONNECT TO [РУ31];
+
+
+GO
+GRANT CONNECT TO [РУ32];
+
+
+GO
+GRANT CONNECT TO [РУ33];
+
+
+GO
+GRANT CONNECT TO [РУ34];
+
+
+GO
+GRANT CONNECT TO [ГвоздевДА];
+
+
+GO
+GRANT CONNECT TO [ЧумакСВ];
+
+
+GO
+GRANT CONNECT TO [НовиковаНС];
+
+
+GO
+GRANT CONNECT TO [БазуноваН];
+
+
+GO
+GRANT CONNECT TO [БеляковаМК];
+
+
+GO
+GRANT CONNECT TO [БоровскаяОВ];
+
+
+GO
+GRANT CONNECT TO [МолодкинаНА];
+
+
+GO
+GRANT CONNECT TO [ЕфимоваГМ];
+
+
+GO
+GRANT CONNECT TO [ГерасимовАЕ];
+
+
+GO
+GRANT CONNECT TO [КучмайЮЕ];
+
+
+GO
+GRANT CONNECT TO [Макоева];
+
+
+GO
+GRANT CONNECT TO [ЗиновьевВВ];
+
+
+GO
+GRANT CONNECT TO [Инженер];
+
+
+GO
+GRANT CONNECT TO [МТС1];
+
+
+GO
+GRANT CONNECT TO [МТС2];
+
+
+GO
+GRANT CONNECT TO [МТС3];
+
+
+GO
+GRANT CONNECT TO [МТС4];
+
+
+GO
+GRANT CONNECT TO [Афанасьев];
+
+
+GO
+GRANT CONNECT TO [Хомякова];
+
+
+GO
+GRANT CONNECT TO [Perini1];
+
+
+GO
+GRANT CONNECT TO [Perini2];
+
+
+GO
+GRANT CONNECT TO [Perini3];
+
+
+GO
+GRANT CONNECT TO [Perini4];
+
+
+GO
+GRANT CONNECT TO [СунцоваЛВ];
+
+
+GO
+GRANT CONNECT TO [КалининА];
+
+
+GO
+GRANT CONNECT TO [GriN];
+
+
+GO
+GRANT CONNECT TO [Idea1];
+
+
+GO
+GRANT CONNECT TO [Idea2];
+
+
+GO
+GRANT CONNECT TO [Idea3];
+
+
+GO
+GRANT CONNECT TO [Idea4];
+
+
+GO
+GRANT CONNECT TO [Kadilani1];
+
+
+GO
+GRANT CONNECT TO [Kadilani2];
+
+
+GO
+GRANT CONNECT TO [Kadilani3];
+
+
+GO
+GRANT CONNECT TO [Kadilani4];
+
+
+GO
+GRANT CONNECT TO [ФедороваАС];
+
+
+GO
+GRANT CONNECT TO [КлейменоваНН];
+
+
+GO
+GRANT CONNECT TO [ВолковаТА];
+
+
+GO
+GRANT CONNECT TO [КопыловаТЮ];
+
+
+GO
+GRANT CONNECT TO [КрюковаСВ];
+
+
+GO
+GRANT CONNECT TO [ДолгачеваМВ];
+
+
+GO
+GRANT CONNECT TO [Перепаллетировка];
+
+
+GO
+GRANT CONNECT TO [БыковВМ];
+
+
+GO
+GRANT CONNECT TO [БудникВВ];
+
+
+GO
+GRANT CONNECT TO [СергеевМС];
+
+
+GO
+GRANT CONNECT TO [ТрифоновИК];
+
+
+GO
+GRANT CONNECT TO [РытовНВ];
+
+
+GO
+GRANT CONNECT TO [НаумчукСА];
+
+
+GO
+GRANT CONNECT TO [МастерСГИ];
+
+
+GO
+GRANT CONNECT TO [МуравскаяИА];
+
+
+GO
+GRANT CONNECT TO [БубноваСВ];
+
+
+GO
+GRANT CONNECT TO [ПрощеваевАВ];
+
+
+GO
+GRANT CONNECT TO [ДувакинАВ];
+
+
+GO
+GRANT CONNECT TO [КучмайМА];
+
+
+GO
+GRANT CONNECT TO [ГородковАН];
+
+
+GO
+GRANT CONNECT TO [pav];
+
+
+GO
+GRANT CONNECT TO [МедведевАЮ];
+
+
+GO
+GRANT CONNECT TO [ГрузчикСГП0];
+
+
+GO
+GRANT CONNECT TO [ГрузчикСГП1];
+
+
+GO
+GRANT CONNECT TO [ГрузчикСГП2];
+
+
+GO
+GRANT CONNECT TO [ГрузчикСГП3];
+
+
+GO
+GRANT CONNECT TO [ГрузчикСГП4];
+
+
+GO
+GRANT CONNECT TO [ГрузчикОП0];
+
+
+GO
+GRANT CONNECT TO [ГрузчикОП1];
+
+
+GO
+GRANT CONNECT TO [ГрузчикОП2];
+
+
+GO
+GRANT CONNECT TO [ГрузчикОП3];
+
+
+GO
+GRANT CONNECT TO [ГрузчикОП4];
+
+
+GO
+GRANT CONNECT TO [ПетроваНН];
+

@@ -1,0 +1,2 @@
+﻿CREATE USER [ПЛ24];
+

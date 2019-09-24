@@ -1,0 +1,3 @@
+﻿CREATE ROLE [Baler]
+    AUTHORIZATION [dbo];
+

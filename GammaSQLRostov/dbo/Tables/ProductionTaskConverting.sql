@@ -5,9 +5,14 @@
     [GroupPackLabelPNG]       VARBINARY (MAX)  NULL,
     [GroupPackLabelMD5]       VARCHAR (32)     NULL,
     [GroupPackLabelZPL]       VARCHAR (MAX)    NULL,
+    [TransportPackLabelPNG]   VARBINARY (MAX)  NULL,
+    [TransportPackLabelMD5]   VARCHAR (32)     NULL,
+    [TransportPackLabelZPL]   VARCHAR (MAX)    NULL,
     CONSTRAINT [PK_ProductionTaskConverting] PRIMARY KEY CLUSTERED ([ProductionTaskID] ASC),
     CONSTRAINT [FK_ProductionTaskConverting_ProductionTasks] FOREIGN KEY ([ProductionTaskID]) REFERENCES [dbo].[ProductionTasks] ([ProductionTaskID]) ON DELETE CASCADE
 );
+
+
 
 
 GO
@@ -381,3 +386,25 @@ GRANT UPDATE
     ON OBJECT::[dbo].[ProductionTaskConverting] TO [PalletRepacker]
     AS [dbo];
 
+
+GO
+
+CREATE TRIGGER zzuProductionTaskConverting ON ProductionTaskConverting
+AFTER  UPDATE AS 
+INSERT INTO zzProductionTaskConverting
+ SELECT *, 1, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zziProductionTaskConverting ON ProductionTaskConverting
+AFTER  INSERT AS 
+INSERT INTO zzProductionTaskConverting
+ SELECT *, 0, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zzdProductionTaskConverting ON ProductionTaskConverting
+AFTER  DELETE AS 
+INSERT INTO zzProductionTaskConverting
+ SELECT *, 2, GETDATE(),  SYSTEM_USER
+ FROM DELETED

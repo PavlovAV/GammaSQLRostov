@@ -9,6 +9,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IndexProductID]
     ON [dbo].[DocWithdrawalProducts]([ProductID] ASC)
@@ -22,14 +24,16 @@ CREATE NONCLUSTERED INDEX [IndexDocID]
 
 
 GO
-CREATE TRIGGER [dbo].[zzdDocWithdrawalProducts] ON DocWithdrawalProducts
+
+CREATE TRIGGER zzdDocWithdrawalProducts ON DocWithdrawalProducts
 AFTER  DELETE AS 
 INSERT INTO zzDocWithdrawalProducts
  SELECT *, 2, GETDATE(),  SYSTEM_USER
  FROM DELETED
 
 GO
-CREATE TRIGGER [dbo].[zziDocWithdrawalProducts] ON DocWithdrawalProducts
+
+CREATE TRIGGER zziDocWithdrawalProducts ON DocWithdrawalProducts
 AFTER  INSERT AS 
 INSERT INTO zzDocWithdrawalProducts
  SELECT *, 0, GETDATE(),  SYSTEM_USER
@@ -250,6 +254,20 @@ BEGIN
 
 --PRINT 'DecimalWeight-' + CAST(@Weight AS varchar(100))
 --PRINT '4-' + CAST(@Weight AS varchar(100))
+				--begin Павлов 11.09.2019 - если вес остатка по модулю меньше 1 кг, то значит вес 0
+				IF ISNULL(@Weight,0) > -0.001 AND ISNULL(@Weight,0) < 0.001
+				BEGIN
+					SET @Weight = 0
+				END
+				--begin Павлов 15.07.2019
+				IF ISNULL(@Weight,0) > 0 AND ISNULL(@Weight,0) < 0.002
+				BEGIN
+					UPDATE ProductSpools SET 
+					DecimalWeight = @Weight, CurrentDiameter = Diameter, CurrentLength = Length
+					WHERE ProductID = ISNULL(@ProductID,@ProductIDDel) 
+				END
+				ELSE
+				--end Павлов 15.07.2019
 				IF ISNULL(@Weight,0) <= 0
 				BEGIN
 					UPDATE ProductSpools SET 
@@ -427,7 +445,8 @@ DISABLE TRIGGER [dbo].[ChangeProductQuantityAfterInsertWithdrawal]
 
 
 GO
-CREATE TRIGGER [dbo].[zzuDocWithdrawalProducts] ON DocWithdrawalProducts
+
+CREATE TRIGGER zzuDocWithdrawalProducts ON DocWithdrawalProducts
 AFTER  UPDATE AS 
 INSERT INTO zzDocWithdrawalProducts
  SELECT *, 1, GETDATE(),  SYSTEM_USER

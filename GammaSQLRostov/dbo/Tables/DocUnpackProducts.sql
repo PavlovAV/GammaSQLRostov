@@ -7,6 +7,8 @@
 );
 
 
+
+
 GO
 -- =============================================
 -- Author:		<Author,,Name>
@@ -109,3 +111,254 @@ BEGIN
 	Docs b ON a.DocID = b.DocID
 	WHERE NOT EXISTS (SELECT * FROM Rests r WHERE r.ProductID = a.ProductID)
 END
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Wrapper]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Wrapper]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [WarehouseOperator]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Viewer]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [TechnologSGI]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [TechnologSGB]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [QualityInspector]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Engineer]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Wrapper]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Wrapper]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Wrapper]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackProducts] TO [Baler]
+    AS [dbo];
+

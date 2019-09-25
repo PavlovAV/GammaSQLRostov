@@ -1863,5 +1863,51 @@
     </Build>
     <Build Include="dbo\User Defined Types\t_DocBrokeDecisionProducts.sql" />
     <Build Include="Security\Permissions.sql" />
+    <Build Include="dbo\Tables\zzRests.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\zzProductionTaskConverting.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\zzDocShipmentOrders.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\zzDocCloseShiftRemainders.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\zzDocBrokeDecisionProducts.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Tables\CriticalLogs.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Views\CycleSpoolProductionShift.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Security\ПряничниковДН.sql" />
+    <Build Include="Security\ЗаменинЕ.sql" />
+    <Build Include="Security\ДежурныйИнженер.sql" />
+    <Build Include="Security\АСУТП.sql" />
+    <Build Include="Security\VPM.sql" />
+    <Build Include="Security\GammaService.sql" />
+    <Build Include="dbo\Stored Procedures\GetSpecificationNomenclatureOnPlace.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\FillDocCloseShiftMaterialsAtEnd.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\FillDocCloseShiftMaterialsAtBegin.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 ﻿
-
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
@@ -16,7 +15,8 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
+	INSERT INTO CriticalLogs([Log]) VALUES ('Запуск FillDocCloseShiftPMSpools @PlaceID '+CAST(@PlaceID AS varchar(10))+', @ShiftID '+CAST(@ShiftID AS varchar(10))+', @CloseDate' + CONVERT(VARCHAR(100), @CloseDate,113) )
+    
     -- Insert statements for procedure here
 	SELECT a.[1CNomenclatureID] AS NomenclatureID, a.[1CCharacteristicID] AS CharacteristicID, b.Quantity, a.ProductID, c.DocID,
 	d.Name + ' ' + e.Name AS NomenclatureName, f.Number

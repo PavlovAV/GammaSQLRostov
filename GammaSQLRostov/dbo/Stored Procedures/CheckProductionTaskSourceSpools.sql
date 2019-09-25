@@ -1,4 +1,5 @@
-﻿-- =============================================
+﻿
+-- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date, ,>
 -- Description:	<Description, ,>
@@ -14,7 +15,7 @@ BEGIN
 	-- Declare the return variable here
 	DECLARE @SpecificationID uniqueidentifier, @NumNomenkl int, @NumSourceNomenkl int, @ResultMessage varchar(255), @BlockCreation bit = 0, @PlaceGroupID int,
 		@NumProductionTaskLayers int, @NumSourceSpoolsLayers int, @NumCorrectNomenclature int, @TempCorrectNum int, @i int = 1,
-		@ResultDiameter varchar(255)
+		@ResultDiameter varchar(255), @Place varchar(200)
 
 	DECLARE @SpecNomenclature TABLE (rn int, [1CNomenclatureID] uniqueidentifier, [1CCharacteristicID] uniqueidentifier);
 	DECLARE @ActiveUnwinderNomenclature TABLE (NumActiveUnwinders int, [1CNomenclatureID] uniqueidentifier, [1CCharacteristicID] uniqueidentifier);
@@ -24,7 +25,7 @@ BEGIN
 --	DECLARE @WorkingSpecifications TABLE ([1CNomenclatureID] uniqueidentifier, [1CCharacteristicID] uniqueidentifier, [1CPlaceID] uniqueidentifier, 
 --		[1CSpecificationID] uniqueidentifier, IsAllChars Bit)
 
-	SELECT @PlaceGroupID = PlaceGroupID 
+	SELECT @PlaceGroupID = PlaceGroupID, @Place = [Name]
 	FROM
 	Places 
 	WHERE PlaceID = @PlaceID;
@@ -138,9 +139,9 @@ BEGIN
 	IF NOT EXISTS (SELECT * FROM @SpecNomenclature)
 	BEGIN
 		SET @ResultMessage = 'Не найдено спецификации на продукцию для текущего передела!';
-		IF @PlaceGroupID = 99  -- затычка от 14.10.2017 (ЛОмунов)
+		IF @PlaceGroupID = 1
 		BEGIN
-			SET @BlockCreation = 1;
+			SET @BlockCreation = 0;
 		END
 		ELSE 
 		BEGIN
@@ -157,6 +158,8 @@ BEGIN
 		SELECT Unwinder2Spool AS ProductID FROM SourceSpools WHERE Unwinder2Active = 1 AND PlaceID = @PlaceID
 		UNION ALL
 		SELECT Unwinder3Spool AS ProductID FROM SourceSpools WHERE Unwinder3Active = 1 AND PlaceID = @PlaceID
+		UNION ALL
+		SELECT Unwinder4Spool AS ProductID FROM SourceSpools WHERE Unwinder4Active = 1 AND PlaceID = @PlaceID
 	) a
 	JOIN
 	ProductSpools b ON a.ProductID = b.ProductID
@@ -169,7 +172,7 @@ BEGIN
 	GROUP BY [1CNomenclatureID]
 
 	SELECT @NumNomenkl = (SELECT COUNT(*) FROM (SELECT DISTINCT rn FROM @SpecNomenclature) a)
-
+	
 	IF @PlaceGroupID = 1
 	BEGIN
 	-- Проверка по слойности
@@ -238,7 +241,7 @@ BEGIN
 		)
 		BEGIN
 			SET @ResultMessage = 'Исходные тамбура не соответствуют данному индивидуальному заказу';
-			SET @BlockCreation = 1;
+			SET @BlockCreation = 0; --Павлов А.В. 16.08.2019 Поменял с 1 на 0
 		END
 
 	--- Проверка по диаметру
@@ -330,6 +333,13 @@ BEGIN
 				BEGIN
 					SET @ResultMessage = @ResultMessage + '№3 ';
 				END
+				IF EXISTS (SELECT * FROM SourceSpools a --- проверка раската 4
+						JOIN ProductSpools b ON a.Unwinder3Spool = b.ProductID
+						JOIN @IncorrectNomenclature c ON b.[1CNomenclatureID] = c.[1CNomenclatureID] AND b.[1CCharacteristicID] = c.[1CCharacteristicID]
+						WHERE a.PlaceID = @PlaceID AND a.Unwinder4Active = 1)
+				BEGIN
+					SET @ResultMessage = @ResultMessage + '№4 ';
+				END
 				SET @ResultMessage = @ResultMessage + 'не совпадает со спецификацией активного задания!';
 				IF @PlaceGroupID = 1
 				BEGIN
@@ -343,6 +353,9 @@ BEGIN
 			SET @i = @i + 1;
 		END
 	END
+	
+	IF @ResultMessage > ''
+		INSERT CriticalLogs([Log]) VALUES(CAST(@ResultMessage + ' (Задание: ' + ISNULL(CAST(@ProductionTaskID AS varchar(100)),'')+') Передел: ' + ISNULL(@Place,'') + ')' AS varchar(500)))
 	
 	SELECT ISNULL(@ResultMessage, '') AS ResultMessage, ISNULL(@BlockCreation,0) AS BlockCreation
 	

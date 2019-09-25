@@ -4,7 +4,7 @@
     [DocMovementID]                  UNIQUEIDENTIFIER NOT NULL,
     [ProductID]                      UNIQUEIDENTIFIER NOT NULL,
     [Quantity]                       DECIMAL (20, 5)  NULL,
-    [MovementPlaceName]              VARCHAR (250)    NOT NULL,
+    [MovementPlaceName]              VARCHAR (250)    NULL,
     [MovementPlaceZoneName]          VARCHAR (250)    NULL,
     [DateMovement]                   DATETIME         NULL,
     [IsMovementIn]                   BIT              NULL,
@@ -13,6 +13,8 @@
     CONSTRAINT [FK_DocCloseShiftMovementProducts_Docs] FOREIGN KEY ([DocID]) REFERENCES [dbo].[Docs] ([DocID]),
     CONSTRAINT [FK_DocCloseShiftMovementProducts_Products] FOREIGN KEY ([ProductID]) REFERENCES [dbo].[Products] ([ProductID])
 );
+
+
 
 
 GO
@@ -225,4 +227,52 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Утили�
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'0 при отдаче, 1 при получении', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocCloseShiftMovementProducts', @level2type = N'COLUMN', @level2name = N'IsMovementIn';
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftMovementProducts] TO [Dispetcher]
+    AS [dbo];
 

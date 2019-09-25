@@ -1,6 +1,7 @@
 ﻿
 
 
+
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
@@ -36,6 +37,9 @@ BEGIN TRAN
 		WHERE dpp.DocID = @DocInventarisationID AND p.ProductKindID = 3 AND p.[1CNomenclatureID] = @NomenclatureID 
 		AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID  IS NULL))
 		AND (p.[1CQualityID] = @QualityID OR (p.[1CQualityID] IS NULL AND @QualityID IS NULL))
+		AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
+		AND p.ProductKindID = 3
+
 	UPDATE [dpp]
 		SET Quantity = [pi].Quantity
 		FROM 
@@ -47,6 +51,9 @@ BEGIN TRAN
 		WHERE dpp.DocID = @DocInventarisationID AND p.ProductKindID = 3 AND p.[1CNomenclatureID] = @NomenclatureID 
 		AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID  IS NULL))
 		AND (p.[1CQualityID] = @QualityID OR (p.[1CQualityID] IS NULL AND @QualityID IS NULL))
+		AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
+		AND p.ProductKindID = 3
+
 COMMIT TRAN
 END
 

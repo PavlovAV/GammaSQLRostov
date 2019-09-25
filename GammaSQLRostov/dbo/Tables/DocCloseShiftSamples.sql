@@ -13,6 +13,8 @@
 );
 
 
+
+
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Wrapper]
@@ -219,4 +221,52 @@ GRANT SELECT
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Образцы для контроля качества', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocCloseShiftSamples';
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftSamples] TO [Dispetcher]
+    AS [dbo];
 

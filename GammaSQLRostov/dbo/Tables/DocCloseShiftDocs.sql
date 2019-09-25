@@ -7,6 +7,8 @@
 );
 
 
+
+
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Wrapper]
@@ -208,5 +210,53 @@ GRANT SELECT
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocCloseShiftDocs] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftDocs] TO [Dispetcher]
     AS [dbo];
 

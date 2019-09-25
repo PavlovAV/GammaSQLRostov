@@ -1,5 +1,4 @@
-﻿
--- =============================================
+﻿-- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
 -- Description:	Заполнение табличной части отходов закрытия смены конвертингов
@@ -74,8 +73,9 @@ BEGIN
 	JOIN
 	[1CMeasureUnitQualifiers] cuq ON cu.[1CMeasureUnitQualifierID] = cuq.[1CMeasureUnitQualifierID]
 	LEFT JOIN
-	[1CCharacteristics] ch ON ch.[1CCharacteristicID] = a.[1CCharacteristicID] OR 
-		(a.[1CCharacteristicID] IS NULL AND a.[NomenclatureID] = ch.[1CNomenclatureID])
+	[1CCharacteristics] ch ON ch.[1CCharacteristicID] = a.[1CCharacteristicID] 
+		--Павлов А.В. 10.09.2019 На отходы не нужны характеристики (Заменин Е.А.)
+		--OR (a.[1CCharacteristicID] IS NULL AND a.[NomenclatureID] = ch.[1CNomenclatureID])
 	GROUP BY a.NomenclatureID, a.[1CCharacteristicID], ch.[1CCharacteristicID], a.[1CMeasureUnitID], cu.Name, cuq.IsInteger,
 		c1.Name, ch.Name
 	

@@ -10,6 +10,7 @@
 
 
 
+
 CREATE VIEW [dbo].[v1CActualSpecifications]
 AS
 --ОсновныеСпецификацииНоменклатуры Срез последних
@@ -18,7 +19,8 @@ SELECT
 	MS.[1CNomenclatureID],
 	MS.[1CCharacteristicID],
 	MS.[1CPlaceID],
-	MS.[1CSpecificationID]
+	MS.[1CSpecificationID],
+	S.ValidTill
 FROM [1CMainSpecifications] AS MS
 INNER JOIN (SELECT 
 	MAX(i.Period) AS Period,
@@ -28,13 +30,17 @@ INNER JOIN (SELECT
 FROM [1CMainSpecifications] i
 GROUP BY i.[1CNomenclatureID], i.[1CCharacteristicID], i.[1CPlaceID]) AS MP 
 ON 
-MP.Period = MS.Period 
-AND MP.[1CNomenclatureID] = MS.[1CNomenclatureID]
-AND (MP.[1CCharacteristicID] = MS.[1CCharacteristicID] OR (MP.[1CCharacteristicID] IS NULL AND MS.[1CCharacteristicID] IS NULL))
-AND MP.[1CPlaceID] = MS.[1CPlaceID]
-JOIN
-		(Places e JOIN LocalSettings f ON e.BranchID = f.BranchID) ON MS.[1CPlaceID] = e.[1CPlaceID]
-
+	MP.Period = MS.Period 
+	AND MP.[1CNomenclatureID] = MS.[1CNomenclatureID]
+	AND (MP.[1CCharacteristicID] = MS.[1CCharacteristicID] OR (MP.[1CCharacteristicID] IS NULL AND MS.[1CCharacteristicID] IS NULL))
+	AND (MP.[1CPlaceID] = MS.[1CPlaceID] OR (MP.[1CPlaceID] IS NULL AND MS.[1CPlaceID] IS NULL))
+LEFT JOIN
+	(Places e JOIN LocalSettings f ON e.BranchID = f.BranchID) ON MS.[1CPlaceID] = e.[1CPlaceID]
+LEFT JOIN 
+	[1CSpecifications] s ON MS.[1CSpecificationID] = s.[1CSpecificationID]
+WHERE --MS.[1CSpecificationID] IS NULL
+	MS.[1CPlaceID] IS NULL OR 
+	e.[1CPlaceID] IS NOT NULL
 /*
 SELECT DISTINCT Period, [1CNomenclatureID], [1CCharacteristicID], [1CSpecificationID], [1CPlaceID]
 FROM 

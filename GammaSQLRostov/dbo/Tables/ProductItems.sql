@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ProductItems] (
-    [ProductItemID]      UNIQUEIDENTIFIER CONSTRAINT [DF_ProductPalletItems_ProductPalletItemID] DEFAULT (newsequentialid()) NOT NULL,
+    [ProductItemID]      UNIQUEIDENTIFIER CONSTRAINT [DF_ProductItems_ProductItemID] DEFAULT (newsequentialid()) NOT NULL,
     [ProductID]          UNIQUEIDENTIFIER NOT NULL,
     [1CNomenclatureID]   UNIQUEIDENTIFIER NOT NULL,
     [1CCharacteristicID] UNIQUEIDENTIFIER NULL,
@@ -9,6 +9,8 @@
     CONSTRAINT [FK_ProductItems_1CNomenclature] FOREIGN KEY ([1CNomenclatureID]) REFERENCES [dbo].[1CNomenclature] ([1CNomenclatureID]),
     CONSTRAINT [FK_ProductItems_Products] FOREIGN KEY ([ProductID]) REFERENCES [dbo].[Products] ([ProductID])
 );
+
+
 
 
 GO
@@ -35,25 +37,10 @@ CREATE NONCLUSTERED INDEX [IX_FK_ProductItems_ProductPallets]
 
 GO
 
-CREATE TRIGGER zziProductItems ON [ProductItems]
-AFTER  INSERT AS 
-INSERT INTO zzProductItems
- SELECT *, 0, GETDATE(),  SYSTEM_USER
- FROM INSERTED
 GO
 
-CREATE TRIGGER zzuProductItems ON [ProductItems]
-AFTER  UPDATE AS 
-INSERT INTO zzProductItems
- SELECT *, 1, GETDATE(),  SYSTEM_USER
- FROM INSERTED
 GO
 
-CREATE TRIGGER zzdProductItems ON [ProductItems]
-AFTER  DELETE AS 
-INSERT INTO zzProductItems
- SELECT *, 2, GETDATE(),  SYSTEM_USER
- FROM DELETED
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[ProductItems] TO [Wrapper]

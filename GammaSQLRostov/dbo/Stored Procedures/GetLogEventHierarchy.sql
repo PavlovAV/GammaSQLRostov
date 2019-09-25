@@ -1,5 +1,4 @@
 ﻿
-
 -- =============================================
 -- Author:		<Alexandr Pavlov>
 -- Create date: <2018-09-25>
@@ -130,5 +129,11 @@ GRANT EXECUTE
 GO
 GRANT EXECUTE
     ON OBJECT::[dbo].[GetLogEventHierarchy] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[GetLogEventHierarchy] TO PUBLIC
     AS [dbo];
 

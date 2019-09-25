@@ -194,7 +194,7 @@ BEGIN
 						DocShipmentOrders a WHERE a.DocOrderID = @DocOrderID						
 					END
 
-					IF @ProductKindID = 3
+					IF @ProductID IS NULL AND @ProductKindID = 3
 					BEGIN
 						DECLARE @ProductItemID uniqueidentifier
 						--INSERT INTO @ProductItem (ProductID, ProductItemID)
@@ -205,6 +205,7 @@ BEGIN
 								JOIN vProductsInfo p ON dpp.ProductID = p.ProductID 
 								JOIN ProductItems [pi] ON [pi].ProductID = p.ProductID AND [pi].[1CNomenclatureID] = p.[1CNomenclatureID] AND ([pi].[1CCharacteristicID] = p.[1CCharacteristicID] OR ([pi].[1CCharacteristicID] IS NULL AND p.[1CCharacteristicID] IS NULL))
 							WHERE dp.DocOrderId = @DocOrderID AND p.ProductKindID = 3 AND p.[1CNomenclatureID] = @NomenclatureID AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL OR @CharacteristicID IS NULL)) AND p.[1CQualityID] = @QualityID
+							AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
 						--SELECT @ProductID = ProductID, @ProductItemID = ProductItemID FROM @ProductItem
 
 						IF @ProductItemID IS NULL

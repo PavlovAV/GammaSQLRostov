@@ -16,6 +16,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IndexDocSort]
     ON [dbo].[DocMovement]([DocID] ASC, [DocOrderID] ASC);
@@ -136,21 +138,15 @@ GRANT UPDATE
 
 
 GO
-GRANT DELETE
-    ON OBJECT::[dbo].[DocMovement] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT INSERT
-    ON OBJECT::[dbo].[DocMovement] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT REFERENCES
-    ON OBJECT::[dbo].[DocMovement] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
@@ -160,9 +156,7 @@ GRANT SELECT
 
 
 GO
-GRANT UPDATE
-    ON OBJECT::[dbo].[DocMovement] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
@@ -300,5 +294,29 @@ GRANT SELECT
 GO
 GRANT UPDATE
     ON OBJECT::[dbo].[DocMovement] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocMovement] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocMovement] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocMovement] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocMovement] TO [OperatorConverting]
     AS [dbo];
 

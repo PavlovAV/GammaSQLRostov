@@ -1,7 +1,6 @@
 ﻿
 
 
-
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
@@ -103,5 +102,17 @@ GRANT EXECUTE
 GO
 GRANT EXECUTE
     ON OBJECT::[dbo].[mob_GetUserNameFromPerson] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[mob_GetUserNameFromPerson] TO [tsd]
+    AS [dbo];
+
+
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[mob_GetUserNameFromPerson] TO PUBLIC
     AS [dbo];
 

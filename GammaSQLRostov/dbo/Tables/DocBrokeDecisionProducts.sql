@@ -6,12 +6,14 @@
     [Comment]            VARCHAR (1000)   NULL,
     [1CNomenclatureID]   UNIQUEIDENTIFIER NULL,
     [1CCharacteristicID] UNIQUEIDENTIFIER NULL,
-    [DecisionApplied]    BIT              DEFAULT ((0)) NOT NULL,
+    [DecisionApplied]    BIT              CONSTRAINT [DF_DocBrokeDecisionProducts_DecisionApplied] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_DocBrokeDecisionProducts] PRIMARY KEY CLUSTERED ([DocID] ASC, [ProductID] ASC, [StateID] ASC),
     CONSTRAINT [FK_DocBrokeDecisionProducts_DocBroke] FOREIGN KEY ([DocID]) REFERENCES [dbo].[DocBroke] ([DocID]),
     CONSTRAINT [FK_DocBrokeDecisionProducts_Products] FOREIGN KEY ([ProductID]) REFERENCES [dbo].[Products] ([ProductID]),
     CONSTRAINT [FK_DocBrokeDecisionProducts_ProductStates] FOREIGN KEY ([StateID]) REFERENCES [dbo].[ProductStates] ([StateID])
 );
+
+
 
 
 GO
@@ -684,4 +686,502 @@ GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocBrokeDecisionProducts] TO [PalletRepacker]
     AS [dbo];
+
+
+GO
+
+CREATE TRIGGER zzuDocBrokeDecisionProducts ON DocBrokeDecisionProducts
+AFTER  UPDATE AS 
+INSERT INTO zzDocBrokeDecisionProducts
+ SELECT *, 1, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zziDocBrokeDecisionProducts ON DocBrokeDecisionProducts
+AFTER  INSERT AS 
+INSERT INTO zzDocBrokeDecisionProducts
+ SELECT *, 0, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zzdDocBrokeDecisionProducts ON DocBrokeDecisionProducts
+AFTER  DELETE AS 
+INSERT INTO zzDocBrokeDecisionProducts
+ SELECT *, 2, GETDATE(),  SYSTEM_USER
+ FROM DELETED
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	Изменение веса при обновлении данных в решении Акта о браке
+-- =============================================
+CREATE TRIGGER [dbo].[OldChangeProductAfterUpdateBrokeDecision]
+   ON  [dbo].[DocBrokeDecisionProducts]
+   AFTER UPDATE
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+  
+	DECLARE @DocID uniqueidentifier, @ProductID uniqueidentifier, @StateID int, @Quantity decimal(15,5), @ProductKindID INT,
+		@NomenclatureID UNIQUEIDENTIFIER, @CharacteristicID UNIQUEIDENTIFIER, @WeightCoefficient float, @CoreDiameter decimal(18,5)
+		, @DecimalWeight decimal(15,5), @Date DateTime
+
+	DECLARE decisions CURSOR
+	FOR
+	SELECT a.ProductID, a.DocID, a.StateID, a.Quantity, b.ProductKindID, a.[1CNomenclatureID], a.[1CCharacteristicID]
+	FROM
+	inserted a
+	JOIN
+	vProductsInfo b ON a.ProductID = b.ProductID
+	ORDER BY StateID desc
+
+	OPEN decisions
+
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @NomenclatureID, @CharacteristicID
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		IF dbo.AllowEditDoc(@DocID) = 1
+		BEGIN
+			SELECT @Date = Date
+			FROM
+			Docs WHERE DocID = @DocID
+
+			IF @StateID = 2 -- Утилизация 
+			BEGIN
+				IF @ProductKindID = 0 -- Тамбура
+				BEGIN
+					SELECT @DecimalWeight = dbo.CalculateSpoolWeightBeforeDate(@ProductID, @Date)
+					SELECT @Quantity = @Quantity - @DecimalWeight + DecimalWeight
+					FROM
+					ProductSpools WHERE ProductID = @ProductID
+
+					SELECT @WeightCoefficient = (DecimalWeight - @Quantity)/@DecimalWeight,
+						@CoreDiameter = dbo.GetCharSpoolCoreDiameter([1CCharacteristicID])
+					FROM
+					ProductSpools
+					WHERE ProductID = @ProductID 
+
+					UPDATE ProductSpools SET DecimalWeight = DecimalWeight - @Quantity,
+						CurrentDiameter = sqrt(@WeightCoefficient*CurrentDiameter*CurrentDiameter + (1-@WeightCoefficient)*@CoreDiameter*@CoreDiameter),
+						CurrentLength = @WeightCoefficient*CurrentLength
+					WHERE ProductID = @ProductID
+				END
+/*				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE ProductGroupPacks SET Weight = Weight - @Quantity, GrossWeight = Weight - @Quantity
+					WHERE ProductID = @ProductID
+				END
+				IF @ProductKindID = 1 -- паллеты
+				BEGIN
+					UPDATE ProductItems SET Quantity = Quantity - @Quantity
+					WHERE ProductID = @ProductID
+				END*/
+			END
+			ELSE IF @StateID = 5 -- На переделку(Смена номенклатуры)
+			BEGIN
+				IF @ProductKindID = 0
+				BEGIN
+					UPDATE ProductSpools SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID
+
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE ProductGroupPacks SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID
+
+					UPDATE a SET a.[1CNomenclatureID] = @NomenclatureID, a.[1CCharacteristicID] = @CharacteristicID
+					FROM
+					ProductSpools a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					WHERE b.ProductGroupPackID = @ProductID
+				END
+				IF @ProductKindID = 1 -- паллеты
+				BEGIN
+					UPDATE ProductItems SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID 
+				END
+			END
+			ELSE
+			BEGIN	
+				UPDATE Products SET StateID = @StateID
+				WHERE ProductID = @ProductID 
+
+				IF @ProductKindID = 0
+				BEGIN
+					UPDATE ProductSpools SET DecimalWeight = @Quantity
+					WHERE ProductID = @ProductID 
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE a SET a.StateID = @StateID
+					FROM
+					Products a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					WHERE b.ProductGroupPackID = @ProductID
+				END
+			END
+		END
+	
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @NomenclatureID, @CharacteristicID
+
+	END
+
+	CLOSE decisions
+
+	DEALLOCATE decisions
+	
+END
+GO
+DISABLE TRIGGER [dbo].[OldChangeProductAfterUpdateBrokeDecision]
+    ON [dbo].[DocBrokeDecisionProducts];
+
+
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	
+-- =============================================
+CREATE TRIGGER [dbo].[OldChangeProductAfterDeleteBrokeDecision]
+   ON  [dbo].[DocBrokeDecisionProducts]
+   AFTER DELETE
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+  
+	DECLARE @DocID uniqueidentifier, @ProductID uniqueidentifier, @StateID int, @Quantity decimal(15,5), @ProductKindID int,
+		@Date DateTime, @WeightCoefficient float, @CoreDiameter decimal(18,5)
+	
+	DECLARE decisions CURSOR
+	FOR
+	SELECT a.ProductID, a.DocID, a.StateID, a.Quantity, b.ProductKindID, c.Date
+	FROM
+	deleted a
+	JOIN
+	vProductsInfo b ON a.ProductID = b.ProductID
+	JOIN
+	Docs c ON a.DocID = c.DocID
+	ORDER BY StateID desc --  Жуткий костыль, чтобы вес годной записывался в последнюю очередь
+
+	OPEN decisions
+
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @Date
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		IF NOT EXISTS 
+					(
+						SELECT * 
+						FROM 
+						DocBrokeDecisionProducts a
+						JOIN
+						Docs b ON a.DocID = b.DocID AND b.Date > (SELECT Date FROM Docs WHERE DocID = @DocID)
+						WHERE 
+						a.ProductID = @ProductID
+					)
+		BEGIN
+			IF @StateID = 2 -- Утилизация 
+			BEGIN
+				IF @ProductKindID = 0
+				BEGIN
+					SELECT @WeightCoefficient = (DecimalWeight + @Quantity)/b.Quantity,
+						@CoreDiameter = dbo.GetCharSpoolCoreDiameter(a.[1CCharacteristicID])
+					FROM
+					ProductSpools a
+					JOIN
+					DocProductionProducts b ON a.ProductID = b.ProductID
+					WHERE a.ProductID = @ProductID 
+
+					UPDATE ProductSpools SET DecimalWeight = DecimalWeight + @Quantity,
+						CurrentDiameter = sqrt(@WeightCoefficient*Diameter*Diameter + (1-@WeightCoefficient)*@CoreDiameter*@CoreDiameter),
+						CurrentLength = @WeightCoefficient*Length
+						
+					WHERE ProductID = @ProductID
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE ProductGroupPacks SET Weight = Weight + @Quantity, GrossWeight = GrossWeight + @Quantity
+					WHERE ProductID = @ProductID
+				END
+				IF @ProductKindID = 1 -- палеты
+				BEGIN
+					UPDATE ProductItems SET Quantity = Quantity + @Quantity
+					WHERE ProductID = @ProductID
+				END
+			END
+			ELSE IF @StateID = 5 -- На переделку
+			BEGIN
+				IF @ProductKindID = 0 --тамбура
+				BEGIN
+					UPDATE a SET a.[1CNomenclatureID] = b.[1CNomenclatureID], a.[1CCharacteristicID] = b.[1CCharacteristicID]
+					FROM
+					ProductSpools a
+					JOIN
+					(
+						SELECT pi.ProductID, ISNULL(b.[1CNomenclatureID], pi.[1CNomenclatureID]) AS [1CNomenclatureID],
+							ISNULL(b.[1CCharacteristicID], pi.[1CCharacteristicID]) AS [1CCharacteristicID]
+						FROM 
+						DocProductionProducts pi
+						LEFT JOIN
+						(
+							SELECT TOP 1 dbdp.ProductID, dbdp.[1CNomenclatureID], dbdp.[1CCharacteristicID]
+							FROM
+							DocBrokeDecisionProducts dbdp
+							JOIN
+							Docs d ON dbdp.DocID = d.DocID AND d.Date < @Date
+							WHERE dbdp.ProductID = @ProductID AND dbdp.[1CNomenclatureID] IS NOT NULL
+							ORDER BY d.Date DESC
+						) b ON pi.ProductID = b.ProductID
+						WHERE pi.ProductID = @ProductID
+					) b ON a.ProductID = b.ProductID
+					WHERE a.ProductID = @ProductID
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE a SET a.[1CNomenclatureID] = b.[1CNomenclatureID], a.[1CCharacteristicID] = b.[1CCharacteristicID]
+					FROM
+					ProductGroupPacks a
+					JOIN
+					(
+						SELECT pi.ProductID, ISNULL(b.[1CNomenclatureID], pi.[1CNomenclatureID]) AS [1CNomenclatureID],
+							ISNULL(b.[1CCharacteristicID], pi.[1CCharacteristicID]) AS [1CCharacteristicID]
+						FROM 
+						DocProductionProducts pi
+						LEFT JOIN
+						(
+							SELECT TOP 1 dbdp.ProductID, dbdp.[1CNomenclatureID], dbdp.[1CCharacteristicID]
+							FROM
+							DocBrokeDecisionProducts dbdp
+							JOIN
+							Docs d ON dbdp.DocID = d.DocID AND d.Date < @Date
+							WHERE dbdp.ProductID = @ProductID AND dbdp.[1CNomenclatureID] IS NOT NULL
+							ORDER BY d.Date DESC
+						) b ON pi.ProductID = b.ProductID
+						WHERE pi.ProductID = @ProductID
+					) b ON a.ProductID = b.ProductID
+					WHERE a.ProductID = @ProductID
+
+					UPDATE a SET a.[1CNomenclatureID] = c.[1CNomenclatureID], a.[1CCharacteristicID] = c.[1CCharacteristicID]
+					FROM
+					ProductSpools a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					JOIN
+					ProductGroupPacks c ON b.ProductGroupPackID = c.ProductID
+					WHERE c.ProductID = @ProductID
+				END
+				IF @ProductKindID = 1 -- палеты
+				BEGIN
+					UPDATE a SET a.[1CNomenclatureID] = b.[1CNomenclatureID], a.[1CCharacteristicID] = b.[1CCharacteristicID]
+					FROM
+					ProductItems a
+					JOIN
+					(
+						SELECT pi.ProductID, ISNULL(b.[1CNomenclatureID], pi.[1CNomenclatureID]) AS [1CNomenclatureID],
+							ISNULL(b.[1CCharacteristicID], pi.[1CCharacteristicID]) AS [1CCharacteristicID]
+						FROM 
+						DocProductionProducts pi
+						LEFT JOIN
+						(
+							SELECT TOP 1 dbdp.ProductID, dbdp.[1CNomenclatureID], dbdp.[1CCharacteristicID]
+							FROM
+							DocBrokeDecisionProducts dbdp
+							JOIN
+							Docs d ON dbdp.DocID = d.DocID AND d.Date < @Date
+							WHERE dbdp.ProductID = @ProductID AND dbdp.[1CNomenclatureID] IS NOT NULL
+							ORDER BY d.Date DESC
+						) b ON pi.ProductID = b.ProductID
+						WHERE pi.ProductID = @ProductID
+					) b ON a.ProductID = b.ProductID
+				END
+			END
+			ELSE
+			BEGIN
+				UPDATE Products SET StateID = ISNULL
+				(
+					(
+						SELECT TOP 1 a.StateID
+						FROM
+						DocBrokeDecisionProducts a
+						JOIN
+						Docs b ON a.DocID = b.DocID
+						WHERE a.ProductID = @ProductID AND b.Date < @Date AND a.StateID <> 2
+						ORDER BY b.Date DESC
+					),
+					0
+				)
+				WHERE ProductID = @ProductID 
+
+				IF @ProductKindID = 0
+				BEGIN
+					UPDATE ProductSpools 
+					SET DecimalWeight = dbo.CalculateSpoolWeightBeforeDate(@ProductID, @Date)
+					WHERE ProductID = @ProductID 
+				END
+				IF @ProductKindID = 2
+				BEGIN
+					UPDATE a SET a.StateID = c.StateID
+					FROM
+					Products a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					JOIN
+					Products c ON b.ProductGroupPackID = c.ProductID
+					WHERE c.ProductID = @ProductID
+				END
+			END
+		END
+
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @Date
+
+	END
+
+	CLOSE decisions
+
+	DEALLOCATE decisions
+
+END
+GO
+DISABLE TRIGGER [dbo].[OldChangeProductAfterDeleteBrokeDecision]
+    ON [dbo].[DocBrokeDecisionProducts];
+
+
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	Изменение веса при вставке данных в решении Акта о браке
+-- =============================================
+CREATE TRIGGER [dbo].[OldChangeProductAfterBrokeDecision]
+   ON  [dbo].[DocBrokeDecisionProducts]
+   AFTER INSERT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+  
+	DECLARE @DocID uniqueidentifier, @ProductID uniqueidentifier, @StateID int, @Quantity decimal(15,5), @ProductKindID INT,
+		@NomenclatureID UNIQUEIDENTIFIER, @CharacteristicID UNIQUEIDENTIFIER, @WeightCoefficient float, @CoreDiameter decimal(18,5)
+	
+	DECLARE decisions CURSOR
+	FOR
+	SELECT a.ProductID, a.DocID, a.StateID, a.Quantity, b.ProductKindID, a.[1CNomenclatureID], a.[1CCharacteristicID]
+	FROM
+	inserted a
+	JOIN
+	vProductsInfo b ON a.ProductID = b.ProductID
+	ORDER BY StateID desc --  Жуткий костыль, чтобы вес годной записывался в последнюю очередь
+
+	OPEN decisions
+
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @NomenclatureID, @CharacteristicID
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		IF dbo.AllowEditDoc(@DocID) = 1
+		BEGIN
+			IF @StateID = 2 -- Утилизация 
+			BEGIN
+				IF @ProductKindID = 0 -- Тамбура
+				BEGIN
+					SELECT @WeightCoefficient = (DecimalWeight - @Quantity)/DecimalWeight,
+						@CoreDiameter = dbo.GetCharSpoolCoreDiameter([1CCharacteristicID])
+					FROM
+					ProductSpools
+					WHERE ProductID = @ProductID 
+
+					UPDATE ProductSpools SET DecimalWeight = DecimalWeight - @Quantity,
+						CurrentDiameter = sqrt(@WeightCoefficient*CurrentDiameter*CurrentDiameter + (1-@WeightCoefficient)*@CoreDiameter*@CoreDiameter),
+						CurrentLength = @WeightCoefficient*CurrentLength
+					WHERE ProductID = @ProductID
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE ProductGroupPacks SET Weight = Weight - @Quantity, GrossWeight = Weight - @Quantity
+					WHERE ProductID = @ProductID
+				END
+				IF @ProductKindID = 1 -- паллеты
+				BEGIN
+					UPDATE ProductItems SET Quantity = Quantity - @Quantity
+					WHERE ProductID = @ProductID
+				END
+			END
+			ELSE IF @StateID = 5 -- На переделку(Смена номенклатуры)
+			BEGIN
+				IF @ProductKindID = 0
+				BEGIN
+					UPDATE ProductSpools SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID
+
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE ProductGroupPacks SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID
+
+					UPDATE a SET a.[1CNomenclatureID] = @NomenclatureID, a.[1CCharacteristicID] = @CharacteristicID
+					FROM
+					ProductSpools a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					WHERE b.ProductGroupPackID = @ProductID
+				END
+				IF @ProductKindID = 1 -- паллеты
+				BEGIN
+					UPDATE ProductItems SET [1CNomenclatureID] = @NomenclatureID, [1CCharacteristicID] = @CharacteristicID
+					WHERE ProductID = @ProductID 
+				END
+			END
+			ELSE
+			BEGIN	
+				UPDATE Products SET StateID = @StateID
+				WHERE ProductID = @ProductID 
+
+				IF @ProductKindID = 0
+				BEGIN
+					UPDATE ProductSpools SET DecimalWeight = @Quantity
+					WHERE ProductID = @ProductID 
+				END
+				IF @ProductKindID = 2 -- ГУ
+				BEGIN
+					UPDATE a SET a.StateID = @StateID
+					FROM
+					Products a
+					JOIN
+					vGroupPackSpools b ON a.ProductID = b.ProductID
+					WHERE b.ProductGroupPackID = @ProductID
+				END
+			END
+		END
+	
+	FETCH NEXT FROM decisions
+	INTO @ProductID, @DocID, @StateID, @Quantity, @ProductKindID, @NomenclatureID, @CharacteristicID
+
+	END
+
+	CLOSE decisions
+
+	DEALLOCATE decisions
+	
+END
+GO
+DISABLE TRIGGER [dbo].[OldChangeProductAfterBrokeDecision]
+    ON [dbo].[DocBrokeDecisionProducts];
 

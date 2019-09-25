@@ -20,6 +20,8 @@
 );
 
 
+
+
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocShipmentOrders] TO [Wrapper]
@@ -159,3 +161,25 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Време�
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Временное поле для заведения доверенности водителя в приказ', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocShipmentOrders', @level2type = N'COLUMN', @level2name = N'DriverDocument';
 
+
+GO
+
+CREATE TRIGGER zzuDocShipmentOrders ON DocShipmentOrders
+AFTER  UPDATE AS 
+INSERT INTO zzDocShipmentOrders
+ SELECT *, 1, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zziDocShipmentOrders ON DocShipmentOrders
+AFTER  INSERT AS 
+INSERT INTO zzDocShipmentOrders
+ SELECT *, 0, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zzdDocShipmentOrders ON DocShipmentOrders
+AFTER  DELETE AS 
+INSERT INTO zzDocShipmentOrders
+ SELECT *, 2, GETDATE(),  SYSTEM_USER
+ FROM DELETED

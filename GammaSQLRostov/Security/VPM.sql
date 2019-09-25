@@ -1,0 +1,2 @@
+﻿CREATE USER [VPM] FOR LOGIN [VPM];
+

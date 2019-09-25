@@ -10,6 +10,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [indexIDNumber]
     ON [dbo].[Products]([ProductID] ASC)
@@ -28,21 +30,21 @@ CREATE NONCLUSTERED INDEX [idxNumber]
 
 
 GO
-CREATE TRIGGER [dbo].[zzdProducts] ON dbo.Products
+CREATE TRIGGER zzdProducts ON dbo.Products
 AFTER  DELETE AS 
 INSERT INTO zzProducts
  SELECT *, 2, GETDATE(),  SYSTEM_USER
  FROM DELETED
 
 GO
-CREATE TRIGGER [dbo].[zzuProducts] ON dbo.Products
+CREATE TRIGGER zzuProducts ON dbo.Products
 AFTER  UPDATE AS 
 INSERT INTO zzProducts
  SELECT *, 1, GETDATE(),  SYSTEM_USER
  FROM INSERTED
 
 GO
-CREATE TRIGGER [dbo].[zziProducts] ON dbo.Products
+CREATE TRIGGER zziProducts ON dbo.Products
 AFTER  INSERT AS 
 INSERT INTO zzProducts
  SELECT *, 0, GETDATE(),  SYSTEM_USER

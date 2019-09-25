@@ -1,6 +1,5 @@
 ﻿
 
-
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date, ,>
@@ -23,6 +22,8 @@ BEGIN
 	DECLARE @DocWithdrawalID uniqueidentifier
 	BEGIN TRANSACTION TR1;
 	SELECT @DocWithdrawalID = DocWithdrawalID FROM DocBrokeDecisionProductWithdrawalProducts WHERE DocID = @DocBrokeID AND ProductID = @ProductID AND StateID = @StateID
+	IF @DocWithdrawalID IS NULL --если в акте на утилизацию групповая упаковка (БО), то в списании по утилизации будет тамбур БО (так как ГУ предварительно будет распакована автоматически)
+		SELECT @DocWithdrawalID = DocWithdrawalID, @ProductID = ProductID FROM DocBrokeDecisionProductWithdrawalProducts WHERE DocID = @DocBrokeID AND ProductID IN (SELECT c.ProductID FROM DocWithdrawalProducts a JOIN DocUnpackWithdrawals b ON a.DocID = b.DocWithdrawalID JOIN DocUnpackProducts c ON b.DocID = c.DocID WHERE a.ProductID = @ProductID) AND StateID = @StateID
 	DELETE DocBrokeDecisionProductWithdrawalProducts WHERE DocID = @DocBrokeID AND ProductID = @ProductID AND StateID = @StateID
 	DELETE DocWithdrawalProducts WHERE DocID = @DocWithdrawalID AND ProductID = @ProductID
 	DELETE DocWithdrawal 

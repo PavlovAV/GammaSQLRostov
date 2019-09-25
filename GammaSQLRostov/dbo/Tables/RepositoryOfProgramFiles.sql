@@ -13,6 +13,8 @@
 );
 
 
+
+
 GO
 
 
@@ -132,5 +134,11 @@ GRANT SELECT
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[RepositoryOfProgramFiles] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[RepositoryOfProgramFiles] TO [tsd]
     AS [dbo];
 

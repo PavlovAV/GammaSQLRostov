@@ -43,7 +43,9 @@ BEGIN
 			IF LEN(@Barcode)>1
 				BEGIN
 					SELECT @Count = COUNT(*), @1CNomenclatureID = MAX([1CNomenclatureID]), @1CCharacteristicID = MAX([1CCharacteristicID]), @1CMeasureUnitID = MAX([1CMeasureUnitID]), @1CQualityID = MAX([1CQualityID]) 
-						FROM [1CBarcodes] WHERE Barcode = @Barcode OR Barcode = LEFT(@Barcode,LEN(@Barcode)-1)
+						FROM [1CBarcodes] a WHERE 
+						--Barcode = @Barcode
+						LEN(@Barcode)>4 AND (a.Barcode = @BarCode OR Barcode = LEFT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-1 END) OR (LEN(Barcode) = 14 AND LEN(@Barcode) = 14 AND LEFT(Barcode,LEN(@Barcode)-4) = LEFT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-4 END)) OR (LEN(Barcode) = 13 AND LEN(@Barcode) = 14 AND LEFT(@Barcode,1) = '0' AND Barcode = RIGHT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-1 END)))
 					IF @Count>0
 					BEGIN
 						SET @ProductKindID = 3

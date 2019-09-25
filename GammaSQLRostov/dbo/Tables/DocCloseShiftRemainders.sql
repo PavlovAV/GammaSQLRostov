@@ -14,6 +14,8 @@
 );
 
 
+
+
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Wrapper]
@@ -226,4 +228,73 @@ GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'0 - Выработка
 1 - Сырье
 ', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocCloseShiftRemainders', @level2type = N'COLUMN', @level2name = N'IsSourceProduct';
+
+
+GO
+
+CREATE TRIGGER zzuDocCloseShiftRemainders ON [DocCloseShiftRemainders]
+AFTER  UPDATE AS 
+INSERT INTO zzDocCloseShiftRemainders
+ SELECT *, 1, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zziDocCloseShiftRemainders ON [DocCloseShiftRemainders]
+AFTER  INSERT AS 
+INSERT INTO zzDocCloseShiftRemainders
+ SELECT *, 0, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zzdDocCloseShiftRemainders ON [DocCloseShiftRemainders]
+AFTER  DELETE AS 
+INSERT INTO zzDocCloseShiftRemainders
+ SELECT *, 2, GETDATE(),  SYSTEM_USER
+ FROM DELETED
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftRemainders] TO [Dispetcher]
+    AS [dbo];
 

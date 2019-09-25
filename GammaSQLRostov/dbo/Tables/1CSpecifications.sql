@@ -5,6 +5,9 @@
     [Marked]            BIT              NULL,
     [Folder]            BIT              NULL,
     [SpecificationType] TINYINT          NULL,
+    [ValidTill]         DATETIME         NULL,
     CONSTRAINT [PK_1CSpecifications_1] PRIMARY KEY CLUSTERED ([1CSpecificationID] ASC)
 );
+
+
 

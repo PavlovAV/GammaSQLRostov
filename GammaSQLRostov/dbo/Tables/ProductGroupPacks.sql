@@ -13,6 +13,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_FK_ProductGroupPacks_1CNomenclature]
     ON [dbo].[ProductGroupPacks]([1CNomenclatureID] ASC);
@@ -68,21 +70,21 @@ BEGIN
 END
 
 GO
-CREATE TRIGGER [dbo].[zzuProductGroupPacks] ON dbo.ProductGroupPacks
+CREATE TRIGGER zzuProductGroupPacks ON dbo.ProductGroupPacks
 AFTER  UPDATE AS 
 INSERT INTO zzProductGroupPacks
  SELECT *, 1, GETDATE(),  SYSTEM_USER
  FROM INSERTED
 
 GO
-CREATE TRIGGER [dbo].[zziProductGroupPacks] ON dbo.ProductGroupPacks
+CREATE TRIGGER zziProductGroupPacks ON dbo.ProductGroupPacks
 AFTER  INSERT AS 
 INSERT INTO zzProductGroupPacks
  SELECT *, 0, GETDATE(),  SYSTEM_USER
  FROM INSERTED
 
 GO
-CREATE TRIGGER [dbo].[zzdProductGroupPacks] ON dbo.ProductGroupPacks
+CREATE TRIGGER zzdProductGroupPacks ON dbo.ProductGroupPacks
 AFTER  DELETE AS 
 INSERT INTO zzProductGroupPacks
  SELECT *, 2, GETDATE(),  SYSTEM_USER

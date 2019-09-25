@@ -4,7 +4,8 @@
 
 CREATE VIEW [dbo].[vRangeDensity]
 AS
-SELECT 200 AS MinDensity, 450 AS MaxDensity
+SELECT TOP 1 200 AS MinDensity, CASE BranchID WHEN 1 THEN 600 WHEN 2 THEN 450 END AS MaxDensity
+FROM LocalSettings
 
 
 

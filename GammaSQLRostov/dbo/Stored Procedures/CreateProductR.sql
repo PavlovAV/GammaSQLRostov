@@ -1,4 +1,10 @@
 ﻿
+-- =============================================
+-- Author:		<Павлов Александр>
+-- Create date: <15.11.2017>
+-- Description:	<Добавление продукта в приказ по ProductID>
+-- =============================================
+--exec dbo.[mob_AddProductIdToMovement] @PersonID='94874554-68A6-E611-A7A3-00241DC986EB',@ProductID='00000000-0000-0000-0000-000000000000',@PlaceID=8,@PlaceZoneID='3650B3A7-0584-E711-9F9B-00241DC986EB',@ProductKindID=3,@NomenclatureID='21DEA56A-E5ED-11E5-A7AC-002590EBA5B7',@CharacteristicID='4425F87B-E5EE-11E5-A7AC-002590EBA5B7',@QualityID='D05404A0-6BCE-449B-A798-41EBE5E5B977',@QuantityRos=1000
 
 CREATE PROCEDURE [dbo].[CreateProductR] 
 	-- Add the parameters for the stored procedure here

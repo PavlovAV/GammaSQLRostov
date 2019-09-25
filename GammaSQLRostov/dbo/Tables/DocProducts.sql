@@ -8,6 +8,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_FK_DocProducts_Products]
     ON [dbo].[DocProducts]([ProductID] ASC);
@@ -94,36 +96,6 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	вставляет запись о месте создания рулона
 -- =============================================
---После создания возможно требуется отключить триггер в связи со ссылкой на gamma
-/*CREATE TRIGGER [dbo].[CopyToOldSpoolInstallLog]
-   ON  [dbo].[SpoolInstallLog]
-   AFTER INSERT
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-	INSERT INTO 
-	Gamma.dbo.SpoolInstallLog (SpoolID, PlaceID, UnwinderID, ShiftID, Date)
-	SELECT b.SpoolID, c.PlaceID, a.UnwinderID, a.ShiftID, a.Date
-	FROM
-	SpoolInstallLog a
-	JOIN
-	Gamma.dbo.GammaNewToOldSpools b ON a.ProductID = b.ProductID
-	JOIN
-	Gamma.dbo.GammaNewToOldPlaces c ON a.PlaceID = c.NewPlaceID
-	JOIN
-	inserted d ON a.ProductID = d.ProductID
-	WHERE NOT EXISTS (SELECT SpoolID FROM Gamma.dbo.SpoolInstallLog WHERE SpoolID = b.SpoolID)
-
-END
-GO*/
--- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
--- Description:	вставляет запись о месте создания рулона
--- =============================================
 CREATE TRIGGER [dbo].[UpdateRestsAfterDelete]
    ON  [dbo].[DocProducts]
    AFTER DELETE
@@ -187,6 +159,7 @@ BEGIN
 	DEALLOCATE docproduct
 */
 END
+
 
 GO
 DISABLE TRIGGER [dbo].[UpdateRestsAfterDelete]

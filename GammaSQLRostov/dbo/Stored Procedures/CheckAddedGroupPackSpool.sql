@@ -50,7 +50,9 @@ BEGIN
 	BEGIN
 		SET @Result = @Result + CHAR(10) + CHAR(13) + 'Вы пытаетесь запаковать рулон требующий решения'
 	END
-
+	IF @Result > ''
+		INSERT CriticalLogs([Log]) VALUES(CAST(@Result + ' (БО: ' + (SELECT TOP 1 Number FROM Products WHERE ProductID = @AddedProductId)+') ГУ: ' + (SELECT TOP 1 Number FROM Products WHERE ProductID = @BaseProductID) + ')' AS varchar(500)))
+	
 	SELECT @Result
 
 END

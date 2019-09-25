@@ -9,6 +9,8 @@
 );
 
 
+
+
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocShipmentOrderInfo] TO [Wrapper]
@@ -139,4 +141,9 @@ GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocShipmentOrderInfo] TO [PalletRepacker]
     AS [dbo];
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'0 - отгрузка
+1 - внутренний заказ', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocShipmentOrderInfo', @level2type = N'COLUMN', @level2name = N'KindID';
 

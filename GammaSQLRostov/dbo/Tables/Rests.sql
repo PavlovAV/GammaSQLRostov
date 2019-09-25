@@ -10,9 +10,14 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_Rests_PlaceID_iProductID_PlaceZoneID]
-    ON [dbo].[Rests]([PlaceID] ASC);
+    ON [dbo].[Rests]([PlaceID] ASC)
+    INCLUDE([ProductID], [PlaceZoneID]);
+
+
 
 
 GO
@@ -434,3 +439,63 @@ GRANT UPDATE
     ON OBJECT::[dbo].[Rests] TO [PalletRepacker]
     AS [dbo];
 
+
+GO
+
+CREATE TRIGGER zzuRests ON Rests
+AFTER  UPDATE AS 
+INSERT INTO zzRests
+ SELECT *, 1, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zziRests ON Rests
+AFTER  INSERT AS 
+INSERT INTO zzRests
+ SELECT *, 0, GETDATE(),  SYSTEM_USER
+ FROM INSERTED
+GO
+
+CREATE TRIGGER zzdRests ON Rests
+AFTER  DELETE AS 
+INSERT INTO zzRests
+ SELECT *, 2, GETDATE(),  SYSTEM_USER
+ FROM DELETED
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	вставляет запись о месте создания рулона
+-- =============================================
+CREATE TRIGGER [dbo].[trgDelete]
+   ON  [dbo].[Rests]
+   INSTEAD OF DELETE
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+  
+	IF SUSER_NAME() LIKE 'БДМ%'
+	BEGIN
+		UPDATE a SET PlaceID = 33
+			FROM Rests a JOIN deleted b ON a.ProductID = b.ProductID
+			WHERE  b.Quantity = 1 AND ISNULL(b.PlaceID,0) IN (1,2)
+		UPDATE a SET PlaceID = 21
+			FROM Rests a JOIN deleted b ON a.ProductID = b.ProductID
+			WHERE NOT (b.Quantity = 1 AND ISNULL(b.PlaceID,0) IN (1,2))
+		/*DELETE a
+			FROM
+			Rests a
+			JOIN
+			deleted b ON a.ProductID = b.ProductID
+			WHERE NOT (b.Quantity = 1 AND ISNULL(b.PlaceID,0) IN (1,2))
+			*/
+	END
+	ELSE
+		DELETE a
+			FROM
+			Rests a
+			JOIN
+			deleted b ON a.ProductID = b.ProductID
+END

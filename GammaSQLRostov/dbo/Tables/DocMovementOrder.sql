@@ -10,6 +10,8 @@
 );
 
 
+
+
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocMovementOrder] TO [Wrapper]
@@ -119,21 +121,15 @@ GRANT UPDATE
 
 
 GO
-GRANT DELETE
-    ON OBJECT::[dbo].[DocMovementOrder] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT INSERT
-    ON OBJECT::[dbo].[DocMovementOrder] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT REFERENCES
-    ON OBJECT::[dbo].[DocMovementOrder] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
@@ -143,9 +139,7 @@ GRANT SELECT
 
 
 GO
-GRANT UPDATE
-    ON OBJECT::[dbo].[DocMovementOrder] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO

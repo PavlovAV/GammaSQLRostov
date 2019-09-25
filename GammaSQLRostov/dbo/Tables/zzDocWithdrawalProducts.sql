@@ -8,3 +8,17 @@
     [zzUserID]           VARCHAR (100)    NULL
 );
 
+
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[zzDocWithdrawalProducts] TO PUBLIC
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[zzDocWithdrawalProducts] TO PUBLIC
+    AS [dbo];
+

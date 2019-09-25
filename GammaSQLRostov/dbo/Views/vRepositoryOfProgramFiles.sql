@@ -5,12 +5,14 @@
 
 
 
+
+
 CREATE VIEW [dbo].[vRepositoryOfProgramFiles]
 AS
 SELECT FileID, DirName, [FileName], Title, MD5, [Action], [Image], ProgramName
 FROM RepositoryOfProgramFiles 
 WHERE IsActivity = 1 AND action IS NOT NULL
-AND DATEPART(hour,GETDATE()) BETWEEN 8 AND 22
+AND DATEPART(hour,GETDATE()) BETWEEN 7 AND 16
 
 
 
@@ -95,5 +97,11 @@ GRANT SELECT
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[vRepositoryOfProgramFiles] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT SELECT
+    ON OBJECT::[dbo].[vRepositoryOfProgramFiles] TO [tsd]
     AS [dbo];
 

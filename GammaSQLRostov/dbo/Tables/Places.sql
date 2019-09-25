@@ -17,8 +17,8 @@
     [UseApplicator]                 BIT              CONSTRAINT [DF_Places_UseApplicator] DEFAULT ((0)) NULL,
     [ApplicatorLabelPath]           NVARCHAR (500)   NULL,
     [IsRobot]                       BIT              CONSTRAINT [DF_Places_IsRobot] DEFAULT ((0)) NULL,
-    [IsWithdrawalMaterial]          BIT              CONSTRAINT [DF_Places_IsWithdrawalMaterial] DEFAULT ((0)) NOT NULL,
-    [PlaceWithdrawalMaterialTypeID] INT              DEFAULT ((0)) NOT NULL,
+    [IsWithdrawalMaterial]          BIT              CONSTRAINT [DF_Places_IsWhithdrawalMaterial] DEFAULT ((0)) NOT NULL,
+    [PlaceWithdrawalMaterialTypeID] INT              CONSTRAINT [DF_Places_PlaceWithdrawalMaterialTypeID] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Places] PRIMARY KEY CLUSTERED ([PlaceID] ASC),
     CONSTRAINT [FK_Places_1CPlaces] FOREIGN KEY ([1CPlaceID]) REFERENCES [dbo].[1CPlaces] ([1CPlaceID]),
     CONSTRAINT [FK_Places_Branches] FOREIGN KEY ([BranchID]) REFERENCES [dbo].[Branches] ([BranchID]),
@@ -26,6 +26,8 @@
     CONSTRAINT [FK_Places_PlaceGroups1] FOREIGN KEY ([PlaceGroupID]) REFERENCES [dbo].[PlaceGroups] ([PlaceGroupID]),
     CONSTRAINT [FK_Places_PlaceWithdrawalMaterialTypes] FOREIGN KEY ([PlaceWithdrawalMaterialTypeID]) REFERENCES [dbo].[PlaceWithdrawalMaterialTypes] ([PlaceWithdrawalMaterialTypeID])
 );
+
+
 
 
 GO

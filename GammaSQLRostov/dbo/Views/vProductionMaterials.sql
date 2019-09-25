@@ -1,6 +1,10 @@
 ﻿
 
 
+
+
+
+
 CREATE VIEW [dbo].[vProductionMaterials]
 AS
   WITH Materials_CTE
@@ -64,7 +68,7 @@ AS
 	UNION ALL
 	SELECT *
 		FROM Materials_CTE c1
-		WHERE c1.NomenclatureKindID = 1 AND c1.ProductPlaceGroupID = 0
+		WHERE c1.NomenclatureKindID = 1 AND c1.ProductPlaceGroupID IN (0,2)
 	) a 
 	GROUP BY a.NomenclatureID, a.CharacteristicID, a.WithdrawByFact, a.MeasureUnitID, MeasureUnit, a.ProductNomenclatureID, a.ProductCharacteristicID, a.ProductPlaceID, a.ProductNomenclatureName, a.NomenclatureName, a.Quantity
 

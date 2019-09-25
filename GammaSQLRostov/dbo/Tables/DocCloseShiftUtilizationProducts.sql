@@ -9,6 +9,8 @@
 );
 
 
+
+
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Wrapper]
@@ -215,4 +217,52 @@ GRANT SELECT
 
 GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Утилизированная продукция на смене', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'DocCloseShiftUtilizationProducts';
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Dispetcher]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocCloseShiftUtilizationProducts] TO [Dispetcher]
+    AS [dbo];
 

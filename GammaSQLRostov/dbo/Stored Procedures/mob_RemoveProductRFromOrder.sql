@@ -33,7 +33,10 @@ BEGIN TRAN
 		AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID  IS NULL))
 		AND
 		(p.[1CQualityID] = @QualityID OR (p.[1CQualityID] IS NULL AND @QualityID IS NULL))
+		AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
+		AND p.ProductKindID = 3
 		--((p.[1CQualityID] = @QualityID AND p.[1CQualityID] IS NOT NULL AND ISNULL(@QualityID,'00000000-0000-0000-0000-000000000000') <> '00000000-0000-0000-0000-000000000000') OR (p.[1CQualityID] IS NULL AND ISNULL(@QualityID,'00000000-0000-0000-0000-000000000000') = '00000000-0000-0000-0000-000000000000'))
+
 	UPDATE [dip]
 		SET Quantity = [pi].Quantity
 		FROM 
@@ -50,6 +53,9 @@ BEGIN TRAN
 		AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID  IS NULL))
 		AND
 		(p.[1CQualityID] = @QualityID OR (p.[1CQualityID] IS NULL AND @QualityID IS NULL))
+		AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
+		AND p.ProductKindID = 3
+
 	UPDATE [dop]
 		SET Quantity = [pi].Quantity
 		FROM 
@@ -66,6 +72,9 @@ BEGIN TRAN
 		AND (p.[1CCharacteristicID] = @CharacteristicID OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID  IS NULL))
 		AND
 		(p.[1CQualityID] = @QualityID OR (p.[1CQualityID] IS NULL AND @QualityID IS NULL))
+		AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
+		AND p.ProductKindID = 3
+
 COMMIT TRAN
 END
 

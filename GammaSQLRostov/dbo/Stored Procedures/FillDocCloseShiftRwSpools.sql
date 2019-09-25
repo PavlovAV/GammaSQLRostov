@@ -15,7 +15,8 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
+	INSERT INTO CriticalLogs([Log]) VALUES ('Запуск FillDocCloseShiftRwSpools @PlaceID '+CAST(@PlaceID AS varchar(10))+', @ShiftID '+CAST(@ShiftID AS varchar(10))+', @CloseDate' + CONVERT(VARCHAR(100), @CloseDate,113) )
+    
     DECLARE @BeginDate DateTime2, @EndDate DateTime2, @MinDate DateTime2
 
 	SELECT @BeginDate = DATEADD(hour, -1, dbo.GetShiftBeginTime(@CloseDate)), @EndDate = DATEADD(hour, 1, dbo.GetShiftEndTime(@CloseDate))
@@ -26,7 +27,7 @@ BEGIN
 	WHERE DocTypeID = 0 AND a.PlaceID = @PlaceID AND ShiftID = @ShiftID
 	AND a.Date BETWEEN @BeginDate AND @EndDate
 
-	SELECT a.ProductID, b.[1CCharacteristicID], b.[1CNomenclatureID], b.NomenclatureName, b.ProductionQuantity AS Weight,
+	SELECT a.ProductID, b.[1CCharacteristicID], b.[1CNomenclatureID], b.NomenclatureName, CASE WHEN b.ProductionQuantity > 0.01 THEN b.ProductionQuantity ELSE 0 END AS Weight,
 		b.Number, b.DocID
 	FROM
 	(
@@ -37,20 +38,20 @@ BEGIN
 		DocProductionProducts b ON a.DocID = b.DocID
 		WHERE DocTypeID = 0 AND a.PlaceID = @PlaceID AND ShiftID = @ShiftID 
 		AND a.Date BETWEEN @BeginDate AND @EndDate
-		UNION ALL
-		SELECT a.ProductID
-		FROM
-		Products a
-		JOIN
-		DocProductionProducts b ON a.PRoductID = b.ProductID
-		JOIN
-		Docs c ON b.DocID = c.DocID
-		WHERE NOT EXISTS (SELECT * FROM DocCloseShiftProducts cp WHERE cp.ProductID = a.ProductID)
-		AND c.Date < @MinDate AND c.PlaceID = @PlaceID
+		--UNION ALL
+		--SELECT a.ProductID
+		--FROM
+		--Products a
+		--JOIN
+		--DocProductionProducts b ON a.PRoductID = b.ProductID
+		--JOIN
+		--Docs c ON b.DocID = c.DocID
+		--WHERE NOT EXISTS (SELECT * FROM DocCloseShiftProducts cp WHERE cp.ProductID = a.ProductID)
+		--AND c.Date < @MinDate AND c.PlaceID = @PlaceID
 	) a
 	JOIN
 	vProductsInfo b ON a.ProductID = b.ProductID
-	WHERE b.ProductionQuantity > 0.01
+	--WHERE b.ProductionQuantity > 0.01
 	
 
 END

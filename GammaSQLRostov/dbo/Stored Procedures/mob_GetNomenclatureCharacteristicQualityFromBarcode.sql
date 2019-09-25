@@ -1,6 +1,12 @@
 ﻿
 
 
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	Получение информации по продукции
+-- =============================================
+--EXEC [mob_GetNomenclatureCharacteristicQualityFromBarcode]  '55530000120125'
 CREATE PROCEDURE [dbo].[mob_GetNomenclatureCharacteristicQualityFromBarcode] 
 	-- Add the parameters for the stored procedure here
 	(
@@ -24,7 +30,7 @@ BEGIN
 		LEFT JOIN dbo.[1CCharacteristics] e ON (a.[1CCharacteristicID] IS NULL AND a.[1CNomenclatureID] = e.[1CNomenclatureID]) OR (a.[1CCharacteristicID] IS NOT NULL AND e.[1CCharacteristicID] = a.[1CCharacteristicID])
 		LEFT JOIN [1CQuality] q ON a.[1CQualityID] = q.[1CQualityID]
 	WHERE 
-		LEN(@Barcode)>1 AND (a.Barcode = @BarCode OR Barcode = LEFT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-1 END))
+		LEN(@Barcode)>4 AND (a.Barcode = @BarCode OR Barcode = LEFT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-1 END) OR (LEN(Barcode) = 14 AND LEN(@Barcode) = 14 AND LEN(Barcode) = 14 AND LEN(@Barcode) = 14 AND LEFT(Barcode,LEN(@Barcode)-4) = LEFT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-4 END)) OR (LEN(Barcode) = 13 AND LEN(@Barcode) = 14 AND LEFT(@Barcode,1) = '0' AND Barcode = RIGHT(@Barcode,CASE WHEN LEN(@Barcode) = 0 THEN 0 ELSE LEN(@Barcode)-1 END)))
 	--RETURN @Name
 END
 

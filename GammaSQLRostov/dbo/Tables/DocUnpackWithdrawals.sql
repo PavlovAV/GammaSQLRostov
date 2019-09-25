@@ -7,6 +7,8 @@
 );
 
 
+
+
 GO
 GRANT DELETE
     ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Wrapper]
@@ -232,5 +234,125 @@ GRANT SELECT
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Baler]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorRW]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Loader]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocUnpackWithdrawals] TO [Baler]
     AS [dbo];
 

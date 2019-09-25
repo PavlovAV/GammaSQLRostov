@@ -1,6 +1,12 @@
 ﻿
 
 
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+
 CREATE PROCEDURE [dbo].[FillDocCloseShiftMovementProducts] 
 	-- Add the parameters for the stored procedure here
 	(
@@ -30,19 +36,20 @@ BEGIN
 		   c.DocMovementID,
 		   c.[1CNomenclatureID] AS NomenclatureID,
 		   c.[1CCharacteristicID] AS CharacteristicID,
-		   cc.BaseMeasureUnit AS MeasureUnit,
-		   cc.BaseMeasureUnitID AS MeasureUnitID,
+		   m.Name AS MeasureUnit,
+		   m.[1CMeasureUnitID] AS MeasureUnitID,
 		   cc.NomenclatureKindID
 		FROM
 			vDocMovementProducts c JOIN Docs d ON c.DocMovementID = d.DocID
-			LEFT JOIN vProductsInfo cc ON c.ProductID = cc.ProductID
-		WHERE
-			((c.InPlaceID = @PlaceID AND --d.ShiftID = @ShiftID AND 
+			JOIN [1CNomenclature] cc ON c.[1CNomenclatureID] = cc.[1CNomenclatureID]
+			LEFT JOIN [1CMeasureUnits] m ON m.[1CMeasureUnitQualifierID] = cc.[1CBaseMeasureUnitQualifier] AND m.[1CNomenclatureID] = c.[1CNomenclatureID]
+		WHERE cc.NomenclatureKindID NOT IN (3) AND
+			((c.InPlaceID = @PlaceID AND c.ShiftID = @ShiftID AND 
 			 c.InDate BETWEEN DATEADD(hh, -1, dbo.GetShiftBeginTime(DATEADD(hh, -1, @CloseDate))) 
 			 AND DATEADD(hh, 1, dbo.GetShiftEndTime(DATEADD(hh, -1, @CloseDate)))
 			)
 			OR 
-			(c.OutPlaceID = @PlaceID AND --d.ShiftID = @ShiftID AND 
+			(c.OutPlaceID = @PlaceID AND c.ShiftID = @ShiftID AND 
 			 c.OutDate BETWEEN DATEADD(hh, -1, dbo.GetShiftBeginTime(DATEADD(hh, -1, @CloseDate))) 
 			 AND DATEADD(hh, 1, dbo.GetShiftEndTime(DATEADD(hh, -1, @CloseDate)))
 			))

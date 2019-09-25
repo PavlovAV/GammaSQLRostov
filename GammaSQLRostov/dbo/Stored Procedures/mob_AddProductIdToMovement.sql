@@ -28,6 +28,7 @@ BEGIN
 	DECLARE  @ResultMessage nvarchar(1000)
 		, @Quantity decimal(15,3), @AlreadyAdded bit, @DocMovementID uniqueidentifier, @OutPlaceID int, @OutPlace varchar(50),
 		@Date DateTime, @OutPlaceZoneID uniqueidentifier, @PlaceZone varchar(200), @DocOrderID uniqueidentifier, @IsAddProduct int = 0
+		, @UserID uniqueidentifier
 
 	DECLARE @DocIds table(DocID uniqueidentifier)
 	IF CAST(@ProductID AS varchar(100)) = '00000000-0000-0000-0000-000000000000'
@@ -37,6 +38,18 @@ BEGIN
 	--PRINT CAST(@ProductKindID AS varchar(100))
 	--PRINT CAST(@ProductID AS varchar(100))
 
+	IF @ProductID IS NULL
+	BEGIN
+		IF @ProductKindID <> 3 
+			SET @ResultMessage = 'Продукт с данным шк не найден в базе'
+	END
+	ELSE 
+	BEGIN
+		IF NOT EXISTS (SELECT * FROM Rests WHERE ProductID = @ProductID AND Quantity > 0) 
+			SET @ResultMessage = 'Данное изделие не числится на остатках'
+	END
+
+	/*
 	IF @ProductKindID <> 3 
 	BEGIN
 		IF @ProductID IS NULL
@@ -46,6 +59,7 @@ BEGIN
 			NOT EXISTS (SELECT * FROM vProductsInfo WHERE ProductID = @ProductID AND Quantity > 0)
 				SET @ResultMessage = 'Данное изделие не числится на остатках'
 	END
+	*/
 /*	ELSE IF EXISTS 
 		(
 			SELECT * FROM DocInProducts a
@@ -70,6 +84,7 @@ BEGIN
 		FROM PlaceZones
 		WHERE PlaceZoneID = @PlaceZoneID
 			
+	SET @UserID = dbo.CurrentUserID()
 
 	IF @ResultMessage = '' OR @ResultMessage IS NULL
 	BEGIN
@@ -83,10 +98,14 @@ BEGIN
 			AND InPlaceID = @PlaceID
 			AND (b.IsConfirmed IS NULL OR b.IsConfirmed = 0)
 			AND OrderTypeID = 3 
-			AND b.PersonGuid = @PersonID
+			AND ((b.PersonGuid IS NOT NULL AND @PersonID IS NOT NULL AND b.PersonGuid = @PersonID) OR (@PersonID IS NULL AND b.UserID = @UserID))
 			AND b.ShiftID = @ShiftID
+			AND 
+			((@ShiftID > 0
 			--Если смена с 8, то с 8 часов ищем документы позднее 8:00, если смена с 20 - то документы с 20:00
 			AND ((DATEPART(hour,GETDATE()) BETWEEN 8 AND 19 AND (b.Date >= DATETIMEFROMPARTS (year(GETDATE()), month(GETDATE()), day(GETDATE()), 8, 0, 0, 0))) OR (DATEPART(hour,GETDATE()) BETWEEN 20 AND 24 AND (b.Date >= DATETIMEFROMPARTS (year(GETDATE()), month(GETDATE()), day(GETDATE()), 20, 0, 0, 0))) OR (DATEPART(hour,GETDATE()) BETWEEN 0 AND 7 AND (b.Date >= DATETIMEFROMPARTS (year(DATEADD(DAY,-1,GETDATE())), month(DATEADD(DAY,-1,GETDATE())), day(DATEADD(DAY,-1,GETDATE())), 20, 0, 0, 0))))
+			) OR
+			(@ShiftID = 0 AND CAST(b.Date AS Date) = CAST(GETDATE() AS DATE)))
 			ORDER BY b.Date DESC
 		IF @AlreadyAdded <> 1 OR @AlreadyAdded IS NULL
 		BEGIN		
@@ -97,7 +116,7 @@ BEGIN
 					BEGIN
 						INSERT INTO Docs (DocTypeID, Date, UserID, IsConfirmed, PersonGuid, ShiftID)
 						OUTPUT INSERTED.DocID INTO @DocIds
-						VALUES (2, @Date, dbo.CurrentUserID(), 
+						VALUES (2, @Date, @UserID, 
 							0,--CASE
 							--	WHEN @OutPlaceID = @PlaceID THEN 1
 							--	ELSE 0
@@ -111,7 +130,7 @@ BEGIN
 						VALUES (@DocMovementID, @Date, @OutPlaceID, @Date, @PlaceID,3)
 					END
 
-					IF @ProductKindID = 3
+					IF @ProductID IS NULL AND @ProductKindID = 3
 					BEGIN
 						DECLARE @ProductItemID uniqueidentifier
 						--INSERT INTO @ProductItem (ProductID, ProductItemID)
@@ -130,6 +149,7 @@ BEGIN
 								JOIN ProductItems [pi] ON [pi].ProductID = p.ProductID AND [pi].[1CNomenclatureID] = p.[1CNomenclatureID] 
 									AND (([pi].[1CCharacteristicID] = p.[1CCharacteristicID] AND [pi].[1CCharacteristicID] IS NOT NULL AND p.[1CCharacteristicID] IS NOT NULL) OR ([pi].[1CCharacteristicID] IS NULL AND p.[1CCharacteristicID] IS NULL))
 							WHERE dp.DocMovementID = @DocMovementID AND p.ProductKindID = 3 AND p.[1CNomenclatureID] = @NomenclatureID AND ((p.[1CCharacteristicID] = @CharacteristicID AND @CharacteristicID IS NOT NULL) OR (p.[1CCharacteristicID] IS NULL AND @CharacteristicID IS NULL)) AND p.[1CQualityID] = @QualityID
+								AND ISNULL(p.IsConfirmed,0) = 0 --если подтвержден - то это неполная паллета со своим штрихкодом на наклеенной этикетке
 							ORDER BY 
 							  p.Date DESC
 
@@ -171,7 +191,7 @@ BEGIN
 								VALUES (@DocMovementID, @ProductID, @Date, @PlaceZoneID,@PersonID,@QuantityRos)
 							END
 							
-							--так как транзакцмя еще не закоммичена, то триггер обновления Quantity в DocInProducts и DocOutProducts записывает 0
+							--так как транзакция еще не закоммичена, то триггер обновления Quantity в DocInProducts и DocOutProducts записывает 0
 							UPDATE DocOutProducts SET Quantity = @QuantityUpdate
 								WHERE DocID = @DocMovementID AND ProductID = @ProductID
 							UPDATE DocInProducts SET Quantity = @QuantityUpdate

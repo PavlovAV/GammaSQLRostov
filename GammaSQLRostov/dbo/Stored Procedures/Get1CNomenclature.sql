@@ -668,22 +668,24 @@ BEGIN
 --PRINT RIGHT(CONVERT(VARCHAR(100),GetDate(),113),12)+'--Получение спецификаций'
 	UPDATE a
 	SET a.Description = b.Description, a.ParentID = c.[_1S_IDRRef], a.Marked = b.Marked, a.Folder = b.Folder,
-	a.SpecificationType = b.SpecificationType
+	a.SpecificationType = b.SpecificationType, a.ValidTill = b.ValidTill
+	--SELECT a.*, b.*
 	FROM
 	[1CSpecifications] a
 	JOIN
 	#RefSpecification b ON a.[1CSpecificationID] = b.[_1S_IDRRef]
 	LEFT JOIN
 	#RefSpecification c ON b.[ParentIDRef] = c.IDRef
-	WHERE
-	NOT (((a.Description IS NULL AND b.Description IS NULL) OR				a.Description = b.Description) 
-	AND ((a.ParentID IS NULL AND c.[_1S_IDRRef] IS NULL) OR 				a.ParentID = c.[_1S_IDRRef]) 
-	AND ((a.Marked IS NULL AND b.Marked IS NULL) OR 						a.Marked = b.Marked) 
-	AND ((a.Folder IS NULL AND b.Folder IS NULL) OR							a.Folder = b.Folder)
-	AND ((a.SpecificationType IS NULL AND b.SpecificationType IS NULL) OR	a.SpecificationType = b.SpecificationType))
+	WHERE 
+	NOT (((a.Description IS NULL AND b.Description IS NULL) OR (a.Description IS NOT NULL AND b.Description IS NOT NULL AND a.Description = b.Description) )
+	AND ((a.ParentID IS NULL AND c.[_1S_IDRRef] IS NULL) OR (a.ParentID IS NOT NULL AND c.[_1S_IDRRef] IS NOT NULL AND a.ParentID = c.[_1S_IDRRef]))
+	AND ((a.Marked IS NULL AND b.Marked IS NULL) OR (a.Marked IS NOT NULL AND b.Marked IS NOT NULL AND a.Marked = b.Marked)) 
+	AND ((a.Folder IS NULL AND b.Folder IS NULL) OR (a.Folder IS NOT NULL AND b.Folder IS NOT NULL AND a.Folder = b.Folder))
+	AND ((a.SpecificationType IS NULL AND b.SpecificationType IS NULL) OR (a.SpecificationType IS NOT NULL AND b.SpecificationType IS NOT NULL AND a.SpecificationType = b.SpecificationType))
+	AND ((a.ValidTill IS NULL AND b.ValidTill IS NULL) OR (a.ValidTill IS NOT NULL AND b.ValidTill IS NOT NULL AND a.ValidTill = b.ValidTill)))
 
-	INSERT INTO [1CSpecifications] ([1CSpecificationID], Description, ParentID, Marked, Folder, SpecificationType)
-	SELECT a.[_1S_IDRRef] AS [1CSpecificationID], a.Description, b.[_1S_IDRRef] AS ParentID, a.Marked, a.Folder, a.SpecificationType
+	INSERT INTO [1CSpecifications] ([1CSpecificationID], Description, ParentID, Marked, Folder, SpecificationType, ValidTill)
+	SELECT a.[_1S_IDRRef] AS [1CSpecificationID], a.Description, b.[_1S_IDRRef] AS ParentID, a.Marked, a.Folder, a.SpecificationType, a.ValidTill
 	FROM
 	#RefSpecification a
 	LEFT JOIN
@@ -704,9 +706,9 @@ BEGIN
 	LEFT JOIN
 	#RefCharNomenkl e ON c.[IDRef_CharNomenkl] = e.[IDRef]
 	WHERE --a.[1CNomenclatureID] <> d.[_1S_IDRRef] OR a.[1CCharacteristicID] <> e.[_1S_IDRRef] OR a.Amount <> c.Amount
-	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR	a.[1CNomenclatureID] = d.[_1S_IDRRef])  
-	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR a.[1CCharacteristicID] = e.[_1S_IDRRef]) 
-	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR						a.Amount = c.Amount))
+	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR (a.[1CNomenclatureID] IS NOT NULL AND d.[_1S_IDRRef] IS NOT NULL AND a.[1CNomenclatureID] = d.[_1S_IDRRef])) 
+	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR (a.[1CCharacteristicID] IS NOT NULL AND e.[_1S_IDRRef] IS NOT NULL AND a.[1CCharacteristicID] = e.[_1S_IDRRef])) 
+	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR (a.Amount IS NOT NULL AND c.Amount IS NOT NULL AND a.Amount = c.Amount)))
 	
 	INSERT INTO [1CSpecificationOutputNomenclature] ([1CSPecificationID], LineNumber, [1CNomenclatureID], [1CCharacteristicID], [Amount])
 	SELECT d.[_1S_IDRRef] AS [1CSpecificationID], a._LineNo, b.[_1S_IDRRef] AS [1CNomenclatureID], c.[_1S_IDRRef] AS [1CCharacteristicID],
@@ -758,14 +760,14 @@ BEGIN
 	WHERE 
 	--a.[1CNomenclatureID] <> d.[_1S_IDRRef] OR a.[1CCharacteristicID] <> e.[_1S_IDRRef] OR a.[1CMeasureUnitID] <> f._1S_IDRRef
 	-- OR a.Amount <> c.Amount OR  a.WithdrawByFact <> c.ByFact OR  a.LinkKey <> c.LinkKey OR a.SelectionType <> c.SelectionType OR a.[1CPropertyID] <> rp._1S_IDRRef
-	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR	a.[1CNomenclatureID] = d.[_1S_IDRRef]) 
-	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR a.[1CCharacteristicID] = e.[_1S_IDRRef])  
-	AND ((a.[1CMeasureUnitID] IS NULL AND f._1S_IDRRef IS NULL) OR		a.[1CMeasureUnitID] = f._1S_IDRRef)
-	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR 					a.Amount = c.Amount) 
-	AND ((a.WithdrawByFact IS NULL AND c.ByFact IS NULL) OR 			a.WithdrawByFact = c.ByFact) 
-	AND ((a.LinkKey IS NULL AND c.LinkKey IS NULL) OR 					a.LinkKey = c.LinkKey) 
-	AND ((a.SelectionType IS NULL AND c.SelectionType IS NULL) OR 		a.SelectionType = c.SelectionType) 
-	AND ((a.[1CPropertyID] IS NULL AND rp._1S_IDRRef IS NULL) OR		a.[1CPropertyID] = rp._1S_IDRRef))
+	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR (a.[1CNomenclatureID] IS NOT NULL AND d.[_1S_IDRRef] IS NOT NULL AND a.[1CNomenclatureID] = d.[_1S_IDRRef])) 
+	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR (a.[1CCharacteristicID] IS NOT NULL AND e.[_1S_IDRRef] IS NOT NULL AND a.[1CCharacteristicID] = e.[_1S_IDRRef]))  
+	AND ((a.[1CMeasureUnitID] IS NULL AND f._1S_IDRRef IS NULL) OR (a.[1CMeasureUnitID] IS NOT NULL AND f._1S_IDRRef IS NOT NULL AND a.[1CMeasureUnitID] = f._1S_IDRRef))
+	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR (a.Amount IS NOT NULL AND c.Amount IS NOT NULL AND a.Amount = c.Amount)) 
+	AND ((a.WithdrawByFact IS NULL AND c.ByFact IS NULL) OR (a.WithdrawByFact IS NOT NULL AND c.ByFact IS NOT NULL AND a.WithdrawByFact = c.ByFact)) 
+	AND ((a.LinkKey IS NULL AND c.LinkKey IS NULL) OR (a.LinkKey IS NOT NULL AND c.LinkKey IS NOT NULL AND a.LinkKey = c.LinkKey)) 
+	AND ((a.SelectionType IS NULL AND c.SelectionType IS NULL) OR (a.SelectionType IS NOT NULL AND c.SelectionType IS NOT NULL AND a.SelectionType = c.SelectionType)) 
+	AND ((a.[1CPropertyID] IS NULL AND rp._1S_IDRRef IS NULL) OR (a.[1CPropertyID] IS NOT NULL AND rp._1S_IDRRef IS NOT NULL AND a.[1CPropertyID] = rp._1S_IDRRef)))
 
 	INSERT INTO [1CSpecificationInputNomenclature] ([1CSPecificationID], LineNumber, [1CNomenclatureID], [1CCharacteristicID], [Amount]
 		, [WithdrawByFact], [1CMeasureUnitID], LinkKey, SelectionType, [1CPropertyID])
@@ -825,18 +827,24 @@ BEGIN
 	WHERE 
 	--a.[1CNomenclatureID] <> rn._1S_IDRRef OR a.[1CMeasureUnitID] <> rmu._1S_IDRRef OR a.Amount <> rstnas.Amount
 	--OR (rstnas._Value_RefType = 3 AND a.[1CPropertyValueID] <> rpv._1S_IDRRef) OR (rstnas._Value_RefType <> 3 AND a.[1CPropertyValueID] <> rpvs._1S_IDRRef)
-	NOT (((a.[1CNomenclatureID] IS NULL AND rn._1S_IDRRef IS NULL) OR a.[1CNomenclatureID] = rn._1S_IDRRef) 
-	AND ((a.[1CMeasureUnitID] IS NULL AND rmu._1S_IDRRef IS NULL) OR a.[1CMeasureUnitID] = rmu._1S_IDRRef) 
-	AND ((a.Amount IS NULL AND rstnas.Amount IS NULL) OR			 a.Amount = rstnas.Amount)
+	NOT (((a.[1CNomenclatureID] IS NULL AND rn._1S_IDRRef IS NULL) OR (a.[1CNomenclatureID] IS NOT NULL AND rn._1S_IDRRef IS NOT NULL AND a.[1CNomenclatureID] = rn._1S_IDRRef)) 
+	AND ((a.[1CMeasureUnitID] IS NULL AND rmu._1S_IDRRef IS NULL) OR (a.[1CMeasureUnitID] IS NOT NULL AND rmu._1S_IDRRef IS NOT NULL AND a.[1CMeasureUnitID] = rmu._1S_IDRRef)) 
+	AND ((a.Amount IS NULL AND rstnas.Amount IS NULL) OR (a.Amount IS NOT NULL AND rstnas.Amount IS NOT NULL AND a.Amount = rstnas.Amount))
 	AND ((a.[1CPropertyValueID] IS NULL AND 
 	CASE
 		WHEN rstnas._Value_RefType = 3 THEN rpv._1S_IDRRef
 		ELSE rpvs._1S_IDRRef
-	END IS NULL) OR a.[1CPropertyValueID] = 
+	END IS NULL) 
+	OR 
+	(a.[1CPropertyValueID] IS NOT NULL AND 
 	CASE
 		WHEN rstnas._Value_RefType = 3 THEN rpv._1S_IDRRef
 		ELSE rpvs._1S_IDRRef
-	END ))
+	END IS NOT NULL AND a.[1CPropertyValueID] = 
+	CASE
+		WHEN rstnas._Value_RefType = 3 THEN rpv._1S_IDRRef
+		ELSE rpvs._1S_IDRRef
+	END )))
 
 
 	INSERT INTO [1CSpecificationNomenclatureAutoSelect] ([1CSpecificationID], [LineNo], [1CNomenclatureID], [1CMeasureUnitID]
@@ -900,13 +908,13 @@ BEGIN
 	WHERE 
 	--a.[1CNomenclatureID] <> d.[_1S_IDRRef] OR a.[1CCharacteristicID] <> e.[_1S_IDRRef] OR a.[1CMeasureUnitID] <> f._1S_IDRRef
 	-- OR a.Amount <> c.Amount OR  a.LinkKey <> c.LinkKey OR a.SelectionType <> c.SelectionType OR a.[1CPropertyID] <> rp._1S_IDRRef
-	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR	a.[1CNomenclatureID] = d.[_1S_IDRRef])  
-	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR a.[1CCharacteristicID] = e.[_1S_IDRRef]) 
-	AND ((a.[1CMeasureUnitID] IS NULL AND f._1S_IDRRef IS NULL) OR		a.[1CMeasureUnitID] = f._1S_IDRRef)
-	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR 					a.Amount = c.Amount) 
-	AND ((a.LinkKey IS NULL AND c.LinkKey IS NULL) OR 					a.LinkKey = c.LinkKey) 
-	AND ((a.SelectionType IS NULL AND c.SelectionType IS NULL) OR 		a.SelectionType = c.SelectionType) 
-	AND ((a.[1CPropertyID] IS NULL AND rp._1S_IDRRef IS NULL) OR		a.[1CPropertyID] = rp._1S_IDRRef))
+	NOT (((a.[1CNomenclatureID] IS NULL AND d.[_1S_IDRRef] IS NULL) OR (a.[1CNomenclatureID] IS NOT NULL AND d.[_1S_IDRRef] IS NOT NULL AND a.[1CNomenclatureID] = d.[_1S_IDRRef]))  
+	AND ((a.[1CCharacteristicID] IS NULL AND e.[_1S_IDRRef] IS NULL) OR (a.[1CCharacteristicID] IS NOT NULL AND e.[_1S_IDRRef] IS NOT NULL AND a.[1CCharacteristicID] = e.[_1S_IDRRef])) 
+	AND ((a.[1CMeasureUnitID] IS NULL AND f._1S_IDRRef IS NULL) OR (a.[1CMeasureUnitID] IS NOT NULL AND f._1S_IDRRef IS NOT NULL AND a.[1CMeasureUnitID] = f._1S_IDRRef))
+	AND ((a.Amount IS NULL AND c.Amount IS NULL) OR (a.Amount IS NOT NULL AND c.Amount IS NOT NULL AND a.Amount = c.Amount)) 
+	AND ((a.LinkKey IS NULL AND c.LinkKey IS NULL) OR (a.LinkKey IS NOT NULL AND c.LinkKey IS NOT NULL AND a.LinkKey = c.LinkKey)) 
+	AND ((a.SelectionType IS NULL AND c.SelectionType IS NULL) OR (a.SelectionType IS NOT NULL AND c.SelectionType IS NOT NULL AND a.SelectionType = c.SelectionType)) 
+	AND ((a.[1CPropertyID] IS NULL AND rp._1S_IDRRef IS NULL) OR (a.[1CPropertyID] IS NOT NULL AND rp._1S_IDRRef IS NOT NULL AND a.[1CPropertyID] = rp._1S_IDRRef)))
 
 	INSERT INTO [1CSpecificationWastes] ([1CSPecificationID], LineNumber, [1CNomenclatureID], [1CCharacteristicID], [Amount]
 		, [1CMeasureUnitID], LinkKey, SelectionType, [1CPropertyID])
@@ -945,8 +953,9 @@ BEGIN
 		#RefCharNomenkl cn ON cn.IDRef = irnms.IDRef_CharNomenkl
 		LEFT JOIN
 		#RefUnits u ON u.IDRef = irnms.IDRef_Unit
-		WHERE irnms._Period = a.Period AND rs._1S_IDRRef = a.[1CSpecificationID]
+		WHERE irnms._Period = a.Period 
 			AND a.[1CNomenclatureID] = rn._1S_IDRRef
+			AND (rs._1S_IDRRef = a.[1CSpecificationID] OR (rs._1S_IDRRef IS NULL AND a.[1CSpecificationID] IS NULL))
 			AND ((a.[1CCharacteristicID] IS NULL AND irnms.IDRef_CharNomenkl IS NULL) OR a.[1CCharacteristicID] = cn.[_1S_IDRRef])
 			AND ((a.[1CPlaceID] IS NULL AND irnms.IDRef_Unit IS NULL) OR a.[1CPlaceID] = u.[_1S_IDRRef])
 	)
@@ -979,14 +988,15 @@ BEGIN
 	#RefCharNomenkl c ON a.[IDRef_CharNomenkl] = c.IDRef
 	LEFT JOIN
 	#RefUnits d ON a.IDRef_Unit = d.IDRef
-	JOIN
+	LEFT JOIN
 	#RefSpecification e ON a.IDRef_Specification = e.IDRef
 	WHERE NOT EXISTS
 	(SELECT [1CSpecificationID] FROM
 	[1CMainSpecifications] msp WHERE 
-	msp.[1CSpecificationID] = e.[_1S_IDRRef] AND msp.Period = a._Period AND msp.[1CNomenclatureID] = b.[_1S_IDRRef]
-	AND (msp.[1CCharacteristicID] = c.[_1S_IDRRef] OR (a.IDRef_CharNomenkl IS NULL AND msp.[1CCharacteristicID] IS NULL))
-	AND (msp.[1CPlaceID] = d.[_1S_IDRRef] OR (msp.[1CPlaceID] IS NULL AND a.IDRef_Unit IS NULL)))
+		msp.Period = a._Period AND msp.[1CNomenclatureID] = b.[_1S_IDRRef]
+		AND (msp.[1CSpecificationID] = e.[_1S_IDRRef] OR (msp.[1CSpecificationID] IS NULL AND e.[_1S_IDRRef] IS NULL ))
+		AND (msp.[1CCharacteristicID] = c.[_1S_IDRRef] OR (a.IDRef_CharNomenkl IS NULL AND msp.[1CCharacteristicID] IS NULL))
+		AND (msp.[1CPlaceID] = d.[_1S_IDRRef] OR (msp.[1CPlaceID] IS NULL AND a.IDRef_Unit IS NULL)))
 
 --PRINT RIGHT(CONVERT(VARCHAR(100),GetDate(),113),12)+'--Получение аналогов номенклатуры	'
 	SELECT d.IDRef_Nomenkl ,d.IDRef_CharNomenkl,e.[_1S_IDRRef] AS [1CNomenclatureAnalogID], f.[_1S_IDRRef] AS [1CCharacteristicAnalogID] 

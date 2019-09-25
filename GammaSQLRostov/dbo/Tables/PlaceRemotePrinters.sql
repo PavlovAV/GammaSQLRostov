@@ -1,14 +1,17 @@
 ﻿CREATE TABLE [dbo].[PlaceRemotePrinters] (
-    [PlaceRemotePrinterID] INT IDENTITY (1, 1) NOT NULL,
-    [PlaceID]              INT NOT NULL,
-    [ModbusDeviceID]       INT NOT NULL,
-    [RemotePrinterID]      INT NOT NULL,
-    [IsEnabled]            BIT CONSTRAINT [DF_PlaceRemotePrinters_IsEnabled] DEFAULT ((1)) NULL,
+    [PlaceRemotePrinterID]     INT IDENTITY (1, 1) NOT NULL,
+    [PlaceID]                  INT NOT NULL,
+    [ModbusDeviceID]           INT NOT NULL,
+    [RemotePrinterID]          INT NOT NULL,
+    [IsEnabled]                BIT CONSTRAINT [DF_PlaceRemotePrinters_IsEnabled] DEFAULT ((1)) NULL,
+    [IsDefaultPrinterForGamma] BIT CONSTRAINT [DF_PlaceRemotePrinters_IsDefaultPrinterForGamma] DEFAULT ((1)) NULL,
     CONSTRAINT [PK_PlaceRemotePrinters] PRIMARY KEY CLUSTERED ([PlaceRemotePrinterID] ASC),
     CONSTRAINT [FK_PlaceRemotePrinters_ModbusDevices] FOREIGN KEY ([ModbusDeviceID]) REFERENCES [dbo].[ModbusDevices] ([ModbusDeviceID]),
     CONSTRAINT [FK_PlaceRemotePrinters_Places] FOREIGN KEY ([PlaceID]) REFERENCES [dbo].[Places] ([PlaceID]),
     CONSTRAINT [FK_PlaceRemotePrinters_RemotePrinters] FOREIGN KEY ([RemotePrinterID]) REFERENCES [dbo].[RemotePrinters] ([RemotePrinterID])
 );
+
+
 
 
 GO

@@ -1,5 +1,4 @@
 ﻿
-
 -- =============================================
 -- Author:		<Author,,Name>
 -- Create date: <Create Date,,>
@@ -107,5 +106,11 @@ GRANT EXECUTE
 GO
 GRANT EXECUTE
     ON OBJECT::[dbo].[RefreshProductState] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[RefreshProductState] TO PUBLIC
     AS [dbo];
 

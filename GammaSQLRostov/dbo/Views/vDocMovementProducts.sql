@@ -2,6 +2,9 @@
 
 
 
+
+
+
 CREATE VIEW [dbo].[vDocMovementProducts]
 AS
 	SELECT a.DocID AS DocMovementID, d.ProductID, d.ProductKindID, b.DocOrderID, b.OrderTypeID, b.InPlaceID, b.OutPlaceID, CAST(a.IsShipped AS bit) AS IsShipped, 
@@ -18,6 +21,7 @@ AS
 	, a.InPlaceZoneID, i.[Name] AS InPlaceZone, a.OutPlaceZoneID, j.[Name] AS OutPlaceZone
 	, l.Coefficient AS CoefficientPackage, m.Coefficient AS CoefficientPallet
 	, n.[Name] AS ProductKindName, s.[Name] AS OrderTypeName, q.[Name] AS InPlace, r.[Name] AS OutPlace
+	, c.ShiftID
 	FROM
 	DocMovement b 
 	JOIN

@@ -182,3 +182,51 @@ GRANT SELECT
     ON OBJECT::[dbo].[vDocMovementGoods] TO [PalletRepacker]
     AS [dbo];
 
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[vDocMovementGoods] TO [OperatorBDM]
+    AS [dbo];
+

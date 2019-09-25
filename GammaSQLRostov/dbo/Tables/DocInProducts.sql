@@ -14,6 +14,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IndexDocID]
     ON [dbo].[DocInProducts]([DocID] ASC)
@@ -21,14 +23,16 @@ CREATE NONCLUSTERED INDEX [IndexDocID]
 
 
 GO
-CREATE TRIGGER [dbo].[zzdDocInProducts] ON DocInProducts
+
+CREATE TRIGGER zzdDocInProducts ON DocInProducts
 AFTER  DELETE AS 
 INSERT INTO zzDocInProducts
  SELECT *, 2, GETDATE(),  SYSTEM_USER
  FROM DELETED
 
 GO
-CREATE TRIGGER [dbo].[zzuDocInProducts] ON DocInProducts
+
+CREATE TRIGGER zzuDocInProducts ON DocInProducts
 AFTER  UPDATE AS 
 INSERT INTO zzDocInProducts
  SELECT *, 1, GETDATE(),  SYSTEM_USER
@@ -123,11 +127,17 @@ BEGIN
 			Deleted b ON a.DocID = b.DocID AND a.ProductID = b.ProductID
 		)
 	BEGIN
-		DELETE a
+		UPDATE a SET Quantity = 0
+			FROM
+				Rests a
+				JOIN
+				deleted b ON a.ProductID = b.ProductID 
+		/*DELETE a
 		FROM
 		Rests a
 		JOIN
 		Deleted b ON a.ProductID = b.ProductID
+		*/
 	END
 	ELSE 
 	BEGIN
@@ -145,7 +155,8 @@ BEGIN
 END
 
 GO
-CREATE TRIGGER [dbo].[zziDocInProducts] ON DocInProducts
+
+CREATE TRIGGER zziDocInProducts ON DocInProducts
 AFTER  INSERT AS 
 INSERT INTO zzDocInProducts
  SELECT *, 0, GETDATE(),  SYSTEM_USER
@@ -212,21 +223,15 @@ GRANT UPDATE
 
 
 GO
-GRANT DELETE
-    ON OBJECT::[dbo].[DocInProducts] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT INSERT
-    ON OBJECT::[dbo].[DocInProducts] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
-GRANT REFERENCES
-    ON OBJECT::[dbo].[DocInProducts] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
@@ -236,9 +241,7 @@ GRANT SELECT
 
 
 GO
-GRANT UPDATE
-    ON OBJECT::[dbo].[DocInProducts] TO [QualityInspector]
-    AS [dbo];
+
 
 
 GO
@@ -328,5 +331,53 @@ GRANT SELECT
 GO
 GRANT SELECT
     ON OBJECT::[dbo].[DocInProducts] TO [PalletRepacker]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT UPDATE
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT REFERENCES
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT INSERT
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorBDM]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorConverting]
+    AS [dbo];
+
+
+GO
+GRANT DELETE
+    ON OBJECT::[dbo].[DocInProducts] TO [OperatorBDM]
     AS [dbo];
 

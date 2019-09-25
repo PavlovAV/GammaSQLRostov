@@ -47,7 +47,40 @@ BEGIN
 	BEGIN
 		SET @ResultMessage = 'Продукт россыпью в инвентаризации не обрабатывается'
 	END
-	
+	--Если отсканирован тамбур, который находится в групповой, то в инвентаризацию добавить групповую упаковку
+	IF (@ProductID IS NOT NULL AND @ProductKindID = 0)
+		AND EXISTS 
+		(
+			SELECT * FROM
+			Products p 
+			JOIN
+			DocProductionProducts c ON p.ProductID = c.ProductID
+			JOIN
+			Docs d ON c.DocID = d.DocID
+			JOIN
+			DocProductionWithdrawals b ON c.DocID = b.DocProductionID 
+			JOIN 
+			DocWithdrawalProducts a ON b.DocWithdrawalID = a.DocID AND a.CompleteWithdrawal = 1
+			LEFT JOIN
+			Rests r ON a.ProductID = r.ProductID
+			WHERE a.ProductID = @ProductID AND p.ProductKindID = 2 AND ISNULL(r.Quantity,0) = 0
+		)
+			SELECT TOP 1 @ProductID = p.ProductID, @ProductKindID = p.ProductKindID FROM
+			Products p 
+			JOIN
+			DocProductionProducts c ON p.ProductID = c.ProductID
+			JOIN
+			Docs d ON c.DocID = d.DocID
+			JOIN
+			DocProductionWithdrawals b ON c.DocID = b.DocProductionID 
+			JOIN 
+			DocWithdrawalProducts a ON b.DocWithdrawalID = a.DocID AND a.CompleteWithdrawal = 1
+			LEFT JOIN
+			Rests r ON a.ProductID = r.ProductID
+			WHERE a.ProductID = @ProductID AND p.ProductKindID = 2 AND ISNULL(r.Quantity,0) = 0
+			ORDER BY d.Date DESC
+		
+
 	IF EXISTS 
 		(
 			SELECT * FROM
@@ -72,6 +105,8 @@ BEGIN
 
 		--INSERT INTO DocInventarisationProducts (DocID, Barcode, ProductID)
 		--VALUES (@DocInventarisationID, @Barcode, @ProductID)
+
+		
 		INSERT INTO DocInventarisationProducts (DocID, Barcode, ProductID, [1CNomenclatureID], [1CCharacteristicID], [1CQualityID], Quantity)
 		SELECT @DocInventarisationID, Barcode, ProductID, [1CNomenclatureID], [1CCharacteristicID], [1CQualityID], Quantity
 			FROM vProductsInfo WHERE ProductID = @ProductID

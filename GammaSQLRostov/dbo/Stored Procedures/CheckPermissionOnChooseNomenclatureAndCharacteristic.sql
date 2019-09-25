@@ -1,6 +1,5 @@
 ﻿
 
-
 -- =============================================
 -- Author:		<Alexandr Pavlov>
 -- Create date: <30.01.2018>
@@ -30,9 +29,7 @@ BEGIN
 END
 
 GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].[CheckPermissionOnChooseNomenclatureAndCharacteristic] TO PUBLIC
-    AS [dbo];
+
 
 
 GO

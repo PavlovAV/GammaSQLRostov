@@ -1,5 +1,10 @@
 ﻿
-
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	Приемка продукта на склад
+-- =============================================
+--exec dbo.mob_GetGoodProducts @DocOrderID='4BBB09B2-A4F0-11E6-BE75-002590EBA5B7',@NomenclatureID='5FE4B6AC-E8BB-11E3-B85D-002590304E93',@CharacteristicID='151CC4A4-E8C2-11E3-B85D-002590304E93',@QualityID='D05404A0-6BCE-449B-A798-41EBE5E5B977',@IsOutDoc=1
 CREATE PROCEDURE [dbo].[mob_GetGoodProducts] 
 	-- Add the parameters for the stored procedure here
 	(

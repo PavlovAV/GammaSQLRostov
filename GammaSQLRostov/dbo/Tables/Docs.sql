@@ -9,9 +9,9 @@
     [PrintName]      VARCHAR (255)    NULL,
     [PlaceID]        INT              NULL,
     [ShiftID]        TINYINT          NULL,
-    [Date]           DATETIME         DEFAULT (getdate()) NOT NULL,
+    [Date]           DATETIME         CONSTRAINT [DF_Docs_Date] DEFAULT (getdate()) NOT NULL,
     [Comment]        VARCHAR (8000)   NULL,
-    [IsFromOldGamma] BIT              DEFAULT ((0)) NULL,
+    [IsFromOldGamma] BIT              CONSTRAINT [DF_Docs_IsFromOldGamma] DEFAULT ((0)) NULL,
     [BranchID]       TINYINT          NULL,
     [PersonGuid]     UNIQUEIDENTIFIER NULL,
     CONSTRAINT [PK_Docs] PRIMARY KEY CLUSTERED ([DocID] ASC),
@@ -22,6 +22,8 @@
 );
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_FK_Docs_Users]
     ON [dbo].[Docs]([UserID] ASC);
@@ -29,22 +31,34 @@ CREATE NONCLUSTERED INDEX [IX_FK_Docs_Users]
 
 GO
 CREATE NONCLUSTERED INDEX [idxDocPlace]
-    ON [dbo].[Docs]([PlaceID] ASC);
+    ON [dbo].[Docs]([PlaceID] ASC)
+    INCLUDE([Date], [DocTypeID], [IsConfirmed], [ShiftID]);
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [idxPlaceShift]
-    ON [dbo].[Docs]([PlaceID] ASC, [ShiftID] ASC);
+    ON [dbo].[Docs]([PlaceID] ASC, [ShiftID] ASC)
+    INCLUDE([PrintName]);
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [indexDocType]
-    ON [dbo].[Docs]([DocTypeID] ASC);
+    ON [dbo].[Docs]([DocTypeID] ASC)
+    INCLUDE([DocID], [PlaceID], [ShiftID], [Date]);
+
+
 
 
 GO
 CREATE NONCLUSTERED INDEX [IX_Docs_Date]
-    ON [dbo].[Docs]([Date] DESC);
+    ON [dbo].[Docs]([Date] DESC)
+    INCLUDE([DocTypeID], [IsConfirmed], [PlaceID], [ShiftID]);
+
+
 
 
 GO
@@ -205,7 +219,7 @@ GO
 -- Description:	вставляет запись о месте создания рулона
 -- =============================================
 CREATE TRIGGER [dbo].[DeleteOldUnloads]
-   ON  [dbo].[Docs]
+   ON  dbo.Docs
    AFTER DELETE
 AS
 BEGIN
@@ -213,8 +227,14 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
   
-
+	/*DELETE a
+	FROM
+	Gamma.Dbo.GammaNewDocUnloadToOld a
+	JOIN
+	deleted b ON a.DocID = b.DocID	
+	*/
 END
+
 
 GO
 DISABLE TRIGGER [dbo].[DeleteOldUnloads]
@@ -222,24 +242,21 @@ DISABLE TRIGGER [dbo].[DeleteOldUnloads]
 
 
 GO
-
-CREATE TRIGGER [dbo].[zziDocs] ON dbo.Docs
+CREATE TRIGGER zziDocs ON dbo.Docs
 AFTER  INSERT AS 
 INSERT INTO zzDocs
  SELECT *, 0, GETDATE(),  SYSTEM_USER
  FROM INSERTED
 
 GO
-
-CREATE TRIGGER [dbo].[zzuDocs] ON dbo.Docs
+CREATE TRIGGER zzuDocs ON dbo.Docs
 AFTER  UPDATE AS 
 INSERT INTO zzDocs
  SELECT *, 1, GETDATE(),  SYSTEM_USER
  FROM INSERTED
 
 GO
-
-CREATE TRIGGER [dbo].[zzdDocs] ON dbo.Docs
+CREATE TRIGGER zzdDocs ON dbo.Docs
 AFTER  DELETE AS 
 INSERT INTO zzDocs
  SELECT *, 2, GETDATE(),  SYSTEM_USER

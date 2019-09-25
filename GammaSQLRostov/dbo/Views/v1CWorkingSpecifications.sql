@@ -4,6 +4,9 @@
 
 
 
+
+
+
 CREATE VIEW [dbo].[v1CWorkingSpecifications]
 AS
 --Спецификации действующие
@@ -16,10 +19,12 @@ SELECT
 	v.[1CNomenclatureID] AS [1CNomenclatureID],
 	v.[1CCharacteristicID] AS [1CCharacteristicID],
 	v.[1CPlaceID] AS [1CPlaceID],
-	v.[1CSpecificationID]
+	v.[1CSpecificationID],
+	v.ValidTill
 FROM dbo.v1CActualSpecifications v
-WHERE v.[1CCharacteristicID] IS NOT NULL
-AND v.[1CSpecificationID] IS NOT NULL --запись с пустой спецификацией является закрывающей. т.е. эквивалентно состоянию "нет спецификации"
+WHERE --(v.ValidTill IS NULL OR CAST(v.ValidTill AS DATE) >= CAST(GETDATE() AS DATE)) AND
+	v.[1CCharacteristicID] IS NOT NULL
+	AND v.[1CSpecificationID] IS NOT NULL --запись с пустой спецификацией является закрывающей. т.е. эквивалентно состоянию "нет спецификации"
 
 UNION
 --добавим спецификации с пустой характеристикой
@@ -29,7 +34,8 @@ SELECT
 	v.[1CNomenclatureID] AS [1CNomenclatureID],
 	c.[1CCharacteristicID] AS [1CCharacteristicID],
 	v.[1CPlaceID] AS [1CPlaceID],
-	v.[1CSpecificationID] AS [1CSpecificationID]
+	v.[1CSpecificationID] AS [1CSpecificationID],
+	v.ValidTill
 FROM dbo.v1CActualSpecifications v
 INNER JOIN [1CCharacteristics] c ON c.[1CNomenclatureID] = v.[1CNomenclatureID]
 LEFT JOIN (
@@ -38,12 +44,14 @@ LEFT JOIN (
 		v.[1CCharacteristicID] AS [1CCharacteristicID],
 		v.[1CPlaceID] AS [1CPlaceID]
 	FROM dbo.v1CActualSpecifications v
-	WHERE v.[1CCharacteristicID] IS NOT NULL
-	AND v.[1CSpecificationID] IS NOT NULL
+	WHERE --(v.ValidTill IS NULL OR CAST(v.ValidTill AS DATE) >= CAST(GETDATE() AS DATE)) AND
+		v.[1CCharacteristicID] IS NOT NULL
+		AND v.[1CSpecificationID] IS NOT NULL
 ) AS vch ON vch.[1CNomenclatureID] = v.[1CNomenclatureID] AND vch.[1CPlaceID] = v.[1CPlaceID] AND vch.[1CCharacteristicID] = c.[1CCharacteristicID]
-WHERE v.[1CCharacteristicID] IS NULL
-AND v.[1CSpecificationID] IS NOT NULL --запись с пустой спецификацией является закрывающей. т.е. эквивалентно состоянию "нет спецификации"
-AND vch.[1CNomenclatureID] IS NULL --если есть индивидуальная спецификация, общая (с пустой характеристикой) не действует, даже если общая назначена на дату большую чем индивидуальная
+WHERE --(v.ValidTill IS NULL OR CAST(v.ValidTill AS DATE) >= CAST(GETDATE() AS DATE)) AND
+	v.[1CCharacteristicID] IS NULL
+	AND v.[1CSpecificationID] IS NOT NULL --запись с пустой спецификацией является закрывающей. т.е. эквивалентно состоянию "нет спецификации"
+	AND vch.[1CNomenclatureID] IS NULL --если есть индивидуальная спецификация, общая (с пустой характеристикой) не действует, даже если общая назначена на дату большую чем индивидуальная
 
 
 
